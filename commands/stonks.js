@@ -7,13 +7,16 @@ api_key.apiKey = config.finnhub_api_key;
 const finnhubClient = new finnhub.DefaultApi();
 
 exports.run = async (client, message, args, level) => {
+  const start = Date.now();
+
   if(args[0]) {
     const company = args[0].toUpperCase();
     finnhubClient.quote(company, (error, data, response) => {
+      console.log(`Fetch took ${Date.now() - start}ms`);
       console.log(company);
       console.log(data);
       if(Object.keys(data).length === 0) {
-        message.reply("Invalid ticker ["+company+"]");
+        message.reply(`Invalid ticker [${company}]`);
       } else {
         message.channel.send(`\`\`\`\n
 Company: ${company}
@@ -27,7 +30,7 @@ Yesterday's Close: ${data.pc}\`\`\``);
     });
       
   } else {
-    message.reply(".stonks [ticker]")
+    message.reply(` \`Usage: ${message} [ticker]\``)
   }
 
 };
@@ -35,7 +38,7 @@ Yesterday's Close: ${data.pc}\`\`\``);
 exports.conf = {
   enabled: true,
   guildOnly: false,
-  aliases: ["stonk"],
+  aliases: ["stonk", "quote"],
   permLevel: "User"
 };
 
