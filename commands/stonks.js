@@ -35,7 +35,7 @@ Yesterday's Close: ${data.pc}\`\`\``);
 exports.conf = {
   enabled: true,
   guildOnly: false,
-  aliases: [],
+  aliases: ["stonk"],
   permLevel: "User"
 };
 
