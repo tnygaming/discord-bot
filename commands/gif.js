@@ -1,5 +1,5 @@
-const config = require("../config.js");
-const giphy = require("giphy-api")(config.giphy_api_key);
+const { giphy_api_key } = require("../config.js");
+const giphy = require("giphy-api")(giphy_api_key);
 
 exports.run = async (client, message, args, level) => {
   const start = Date.now();
