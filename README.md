@@ -6,4 +6,4 @@ TNY discord bot
 2. `cd` into directory and run `npm install`.
 3. `npm start` to start the bot.
 
-Thank you for reading.
+Thank you for reading!
