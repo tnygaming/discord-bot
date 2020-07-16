@@ -5,6 +5,8 @@ const config = require("../config.js");
 const api_key = finnhub.ApiClient.instance.authentications['api_key'];
 api_key.apiKey = config.finnhub_api_key; 
 const finnhubClient = new finnhub.DefaultApi();
+const numLocaleOpts = {minimumFractionDigits: 2, maximumFractionDigits: 2};
+
 
 exports.run = async (client, message, args, level) => {
   const start = Date.now();
@@ -18,22 +20,25 @@ exports.run = async (client, message, args, level) => {
       if(Object.keys(data).length === 0) {
         message.reply(`Invalid ticker [${company}]`);
       } else {
-        const priceDiffPercent = Math.round((data.c - data.pc) / data.pc * 10000)/100;
-        const priceDiff = Math.abs(Math.round((data.c - data.pc)*100)/100);
+        const percentDiff = Math.abs(data.c - data.pc) / data.pc * 100;
+        const priceDiff = Math.abs(data.c - data.pc);
 
         let arrowDirection = '\u25B2'; //up
-        let pricePrefix = '\+';
-        if(priceDiffPercent < 0) {
+        let changePrefix = '\+';
+        if(data.c < data.pc) {
           arrowDirection = '\u25BC'; //down 
-          pricePrefix = '\-';
+          changePrefix = '\-';
         } 
+
+        const formattedPriceDiff = priceDiff.toLocaleString('en-US', numLocaleOpts);
+        const formattedPercentDiff = percentDiff.toLocaleString('en-US', numLocaleOpts);
 
         // important to have price prefix match with diff markdown colors
         // + in the beginning of the line for green
         // - for red
         message.channel.send(`\`\`\`diff
 Company: ${company}
-${pricePrefix}\$${priceDiff} (${pricePrefix}${Math.abs(priceDiffPercent)}%) ${arrowDirection}
+${changePrefix}\$${formattedPriceDiff} (${changePrefix}${formattedPercentDiff}%) ${arrowDirection}
 
 Today's Open: ${data.o}
 Today's High: ${data.h}
