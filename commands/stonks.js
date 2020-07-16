@@ -20,8 +20,11 @@ exports.run = async (client, message, args, level) => {
       if(Object.keys(data).length === 0) {
         message.reply(`Invalid ticker [${company}]`);
       } else {
-        const percentDiff = Math.abs(data.c - data.pc) / data.pc * 100;
         const priceDiff = Math.abs(data.c - data.pc);
+        const percentDiff = (priceDiff / data.pc) * 100;
+
+        const formattedPriceDiff = priceDiff.toLocaleString('en-US', numLocaleOpts);
+        const formattedPercentDiff = percentDiff.toLocaleString('en-US', numLocaleOpts);
 
         let arrowDirection = '\u25B2'; //up
         let changePrefix = '\+';
@@ -29,9 +32,6 @@ exports.run = async (client, message, args, level) => {
           arrowDirection = '\u25BC'; //down 
           changePrefix = '\-';
         } 
-
-        const formattedPriceDiff = priceDiff.toLocaleString('en-US', numLocaleOpts);
-        const formattedPercentDiff = percentDiff.toLocaleString('en-US', numLocaleOpts);
 
         // important to have price prefix match with diff markdown colors
         // + in the beginning of the line for green
