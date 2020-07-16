@@ -18,14 +18,29 @@ exports.run = async (client, message, args, level) => {
       if(Object.keys(data).length === 0) {
         message.reply(`Invalid ticker [${company}]`);
       } else {
-        message.channel.send(`\`\`\`\n
+        const priceDiffPercent = Math.round((data.c - data.pc) / data.pc * 10000)/100;
+        const priceDiff = Math.abs(Math.round((data.c - data.pc)*100)/100);
+
+        let arrowDirection = '\u25B2'; //up
+        let pricePrefix = '\+';
+        if(priceDiffPercent < 0) {
+          arrowDirection = '\u25BC'; //down 
+          pricePrefix = '\-';
+        } 
+
+        // important to have price prefix match with diff markdown colors
+        // + in the beginning of the line for green
+        // - for red
+        message.channel.send(`\`\`\`diff
 Company: ${company}
+${pricePrefix}\$${priceDiff} (${pricePrefix}${Math.abs(priceDiffPercent)}%) ${arrowDirection}
 
 Today's Open: ${data.o}
 Today's High: ${data.h}
 Today's Low: ${data.l}
-Current Price: ${data.c}
-Yesterday's Close: ${data.pc}\`\`\``);
+Current Price: ${data.c} 
+Yesterday's Close: ${data.pc}
+\`\`\``);
       }
     });
       
