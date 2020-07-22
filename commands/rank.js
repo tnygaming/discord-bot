@@ -30,12 +30,13 @@ exports.run = async (client, message, args, level) => {
   client.ranks = new Enmap({name: "ranks"});
   const channel = message.channel;
 
+  const subcommand = args[0];
 
-  if(args.length == 0) {
+  if(!subcommand) {
     return sendHelp(channel);
   }
 
-  switch(args[0]) {
+  switch(subcommand) {
     case "set":
       const rank = args[1];
 
@@ -44,15 +45,14 @@ exports.run = async (client, message, args, level) => {
         return sendRanks(channel);
       } else {
         const key = message.author.id;
-        const username = message.author.username;
 
         // save rank
         client.ranks.set(key, {
-          username: username,
+          userId: key,
           rank: rank
         });
 
-        channel.send(username + "'s rank set to: " + rank);
+        channel.send(message.author.username + "'s rank set to: " + rank);
       }
 
       break;
@@ -71,7 +71,8 @@ exports.run = async (client, message, args, level) => {
       const result = client.ranks.get(userId);
 
       if(result) {
-        channel.send(result.username + " is: " + result.rank);
+
+        channel.send(getUsername(client, userId) + " is: " + result.rank);
       } else {
         channel.send("User not found");
       }
@@ -91,7 +92,7 @@ exports.run = async (client, message, args, level) => {
 
       // add data rows
       for(const data of sortedRanks) {
-        embed.addField(data.username, data.rank);
+        embed.addField(getUsername(client, data.userId), data.rank);
       }
 
       return message.channel.send(embed);
@@ -116,6 +117,15 @@ function getRankIndex(rank) {
   return ALLOWED_RANKS.indexOf(rank); // todo: use Map instead of List for storing ranks to make this O(1)
 }
 
+function getUsername(client, userId) {
+  const userObj = client.users.cache.get(userId);
+  if(userObj) {
+    return userObj.username;
+  }
+
+  return "";
+}
+
 exports.conf = {
   enabled: true,
   guildOnly: false,
@@ -126,6 +136,6 @@ exports.conf = {
 exports.help = {
   name: "rank",
   category: "Gaming",
-  description: "???",
+  description: "Flex your rank",
   usage: "rank"
 };
