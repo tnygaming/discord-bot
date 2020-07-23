@@ -11,7 +11,7 @@ exports.run = async (client, message, args, level) => {
   const query = args.join(" ");
   giphy.search({
     "q": query,
-    "limit": 100,
+    "limit": 50,
     "rating": "pg-13"
   }).then(function(rest) {
     console.log(`Fetch took ${Date.now() - start}ms`);
@@ -20,11 +20,11 @@ exports.run = async (client, message, args, level) => {
     // We want to usually give a relevant result, but every so often, we want the result to be a little more random
     const randomNumber = Math.random();
     console.log(`Number of gifs in results: ${rest.data.length}, randomNumber: ${randomNumber}`);
-    buckets = [results.slice(0, 25), results.slice(25, 50), results.slice(50)];
+    buckets = [results.slice(0, 15), results.slice(15, 40), results.slice(40)];
     chosenBucket = null;
-    if (randomNumber < 0.65) {
+    if (randomNumber < 0.85) {
       chosenBucket = buckets[0];
-    } else if (randomNumber < 0.90) {
+    } else if (randomNumber < 0.92) {
       chosenBucket = buckets[1];
     } else {
       chosenBucket = buckets[2];
