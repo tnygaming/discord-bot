@@ -1,7 +1,7 @@
 {
-  "name": "guidebot",
+  "name": "discord-bot",
   "version": "2.3.7",
-  "description": "A boilerplate example bot with command handler and reloadable commands. Updated and Maintained by the Idiot's Guide Community",
+  "description": "A Discord bot dedicated to serving the best CS:GO/Valorant/Overwatch/SC2 Squadron TD/Killing Floor 2/Among Us players in the universe.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -12,17 +12,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/An-Idiots-Guide/guidebot.git"
+    "url": "git+https://github.com/mynameisivan/discord-bot.git"
   },
-  "author": "Evelyne Lachance <eslachance@gmail.com> (http://evie.codes)",
   "contributors": [
-    "York (http://anidiots.guide)"
+    "TNY Group"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/An-Idiots-Guide/guidebot/issues"
+    "url": "https://github.com/mynameisivan/discord-bot/issues"
   },
-  "homepage": "https://github.com/An-Idiots-Guide/guidebot#readme",
+  "homepage": "https://github.com/mynameisivan/discord-bot",
   "dependencies": {
     "better-sqlite3": "^7.1.0",
     "bufferutil": "^4.0.1",
