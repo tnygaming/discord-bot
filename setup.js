@@ -41,28 +41,30 @@ let prompts = [
   },
 ];
 
+
 (async function () {
   console.log("Setting Up GuideBot Configuration...");
   await settings.defer;
   if (!settings.has("default")) {
-    prompts = prompts.slice(1);
+    // Ask for token/ownerId to first-timers only
     console.log("First Start! Inserting default guild settings in the database...");
     await settings.set("default", defaultSettings);
+    const answers = await inquirer.prompt(prompts.slice(1));
+
+    baseConfig = baseConfig
+      .replace("{{ownerID}}", answers.ownerID)
+      .replace("{{token}}", `"${answers.token}"`);
+    fs.writeFileSync("./config.js", baseConfig);
+    console.log("REMEMBER TO NEVER SHARE YOUR TOKEN WITH ANYONE!");
+    console.log("Configuration has been written, enjoy!");
+  } else {
+    // Otherwise, ask if they want to reset defaults 
+    const answers = await inquirer.prompt(prompts.slice(0, 1));
+    if (answers.resetDefaults && answers.resetDefaults === "Yes") {
+      console.log("Resetting default guild settings...");
+      await settings.set("default", defaultSettings);
+    }
   }
 
-  const answers = await inquirer.prompt(prompts);
-
-  if (answers.resetDefaults && answers.resetDefaults === "Yes") {
-    console.log("Resetting default guild settings...");
-    await settings.set("default", defaultSettings);
-  }
-
-  baseConfig = baseConfig
-    .replace("{{ownerID}}", answers.ownerID)
-    .replace("{{token}}", `"${answers.token}"`);
-
-  fs.writeFileSync("./config.js", baseConfig);
-  console.log("REMEMBER TO NEVER SHARE YOUR TOKEN WITH ANYONE!");
-  console.log("Configuration has been written, enjoy!");
   await settings.close();
 }());
