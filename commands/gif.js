@@ -3,14 +3,16 @@ const giphy = require("giphy-api")(giphy_api_key);
 
 exports.run = async (client, message, args, level) => {
   const start = Date.now();
-  const tags = args.join(" ");
-  giphy.random({
-    "tag": tags,
+  const query = args.join(" ");
+  giphy.search({
+    "q": query,
     "rating": "pg-13"
   }).then(function(rest) {
       console.log(`Fetch took ${Date.now() - start}ms`);
-      if(Object.keys(rest.data).length && rest.data.embed_url) {
-        message.reply(`${rest.data.embed_url}`);
+      const results = rest.data
+      if (results.length > 0) {
+        gif = results.random();
+        message.reply(`${gif.embed_url}`);
       } else {
         message.reply("I'm sorry for your loss");
       }
@@ -28,5 +30,5 @@ exports.help = {
   name: "gif",
   category: "Miscelaneous",
   description: "Display a random gif",
-  usage: "gif [tags]"
+  usage: "gif [query]"
 };
