@@ -24,7 +24,7 @@ const ALLOWED_RANKS = [
   "Immortal2",
   "Immortal3",
   "Radiant"
-];
+].reverse();
 
 exports.run = async (client, message, args, level) => {
   client.ranks = new Enmap({name: "ranks"});
