@@ -33,7 +33,7 @@ exports.conf = {
 
 exports.help = {
   name: "8ball",
-  category: "Miscelaneous",
+  category: "Miscellaneous",
   description: "The magic 8-ball knows all the answers.",
   usage: "8ball"
 };
