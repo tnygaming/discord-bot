@@ -24,7 +24,7 @@ const ALLOWED_RANKS = [
   "Immortal2",
   "Immortal3",
   "Radiant"
-].reverse();
+];
 
 exports.run = async (client, message, args, level) => {
   client.ranks = new Enmap({name: "ranks"});
@@ -110,7 +110,7 @@ function sendHelp(channel) {
 }
 
 function sendRanks(channel) {
-  return channel.send("Invalid rank, available ranks:\n" + " • " + ALLOWED_RANKS.join("\n • "), {code: "asciidoc"});
+  return channel.send("Invalid rank, available ranks:\n" + " • " + ALLOWED_RANKS.reverse().join("\n • "), {code: "asciidoc"});
 }
 
 function getRankIndex(rank) {
