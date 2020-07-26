@@ -54,7 +54,7 @@ exports.conf = {
 
 exports.help = {
   name: "gif",
-  category: "Miscelaneous",
+  category: "Miscellaneous",
   description: "Display a random gif",
   usage: "gif [query]"
 };

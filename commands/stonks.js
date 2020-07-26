@@ -64,7 +64,7 @@ exports.conf = {
 
 exports.help = {
   name: "stonks",
-  category: "Miscelaneous",
+  category: "Miscellaneous",
   description: "Stonks only go up",
   usage: "stonks [ticker]"
 };

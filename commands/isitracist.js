@@ -21,7 +21,7 @@ exports.conf = {
 
 exports.help = {
   name: "isitracist",
-  category: "Miscelaneous",
+  category: "Miscellaneous",
   description: "Is it racist?",
   usage: "isitracist"
 };
