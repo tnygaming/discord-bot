@@ -110,7 +110,7 @@ function sendHelp(channel) {
 }
 
 function sendRanks(channel) {
-  return channel.send("Invalid rank, available ranks:\n" + " • " + ALLOWED_RANKS.join("\n • "), {code: "asciidoc"});
+  return channel.send("Invalid rank, available ranks:\n" + " • " + ALLOWED_RANKS.reverse().join("\n • "), {code: "asciidoc"});
 }
 
 function getRankIndex(rank) {
