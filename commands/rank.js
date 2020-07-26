@@ -24,7 +24,7 @@ const ALLOWED_RANKS = [
   "Immortal2",
   "Immortal3",
   "Radiant"
-];
+].reverse();
 
 exports.run = async (client, message, args, level) => {
   client.ranks = new Enmap({name: "ranks"});
@@ -83,7 +83,7 @@ exports.run = async (client, message, args, level) => {
       const ranks = client.ranks.array();
 
       // sort
-      const sortedRanks  = ranks.sort((a, b) => getRankIndex(b.rank) - getRankIndex(a.rank));
+      const sortedRanks  = ranks.sort((a, b) => getRankIndex(a.rank) - getRankIndex(b.rank));
 
       // display as embed.  todo: use ascii table instead
       const embed = new Discord.MessageEmbed()
@@ -110,7 +110,7 @@ function sendHelp(channel) {
 }
 
 function sendRanks(channel) {
-  return channel.send("Invalid rank, available ranks:\n" + " • " + ALLOWED_RANKS.reverse().join("\n • "), {code: "asciidoc"});
+  return channel.send("Invalid rank, available ranks:\n" + " • " + ALLOWED_RANKS.join("\n • "), {code: "asciidoc"});
 }
 
 function getRankIndex(rank) {
