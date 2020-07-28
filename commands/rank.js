@@ -1,5 +1,5 @@
-const Discord = require('discord.js');
 const Enmap = require("enmap");
+const TableBoi = require("../modules/TableBoi");
 
 const ALLOWED_RANKS = [
   "Iron1",
@@ -85,17 +85,16 @@ exports.run = async (client, message, args, level) => {
       // sort
       const sortedRanks  = ranks.sort((a, b) => getRankIndex(b.rank) - getRankIndex(a.rank));
 
-      // display as embed.  todo: use ascii table instead
-      const embed = new Discord.MessageEmbed()
-        .setTitle("Leaderboard")
-        .setColor("#0099ff");
+      const tableBoi = new TableBoi(["User", "Rank"]);
 
       // add data rows
       for(const data of sortedRanks) {
-        embed.addField(getUsername(client, data.userId), data.rank);
+        tableBoi.addRow([getUsername(client, data.userId), data.rank]);
       }
 
-      return message.channel.send(embed);
+      return message.channel.send(`\`\`\`
+${tableBoi.getTableString()}
+\`\`\``);
     default:
       return sendHelp(channel);
   }
