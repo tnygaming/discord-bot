@@ -29,7 +29,7 @@ class TableBoi {
    */
   getTableString() {
     // calculate max-length for each column
-    let colLengths = new Array(this.rows.length-1).fill(0);
+    let colLengths = new Array(this.rows[0].length).fill(0);
     this.rows.forEach(function (row) {
       row.forEach(function (val, index) {
         colLengths[index] = Math.max(val.length, colLengths[index])
