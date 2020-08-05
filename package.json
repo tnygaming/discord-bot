@@ -32,7 +32,7 @@
     "finnhub": "^1.2.1",
     "giphy-api": "^2.0.1",
     "inquirer": "^7.3.3",
-    "libsodium-wrappers": "^0.7.6",
+    "libsodium-wrappers": "^0.7.8",
     "moment": "^2.27.0",
     "moment-duration-format": "^2.3.2",
     "zlib-sync": "^0.1.7"
