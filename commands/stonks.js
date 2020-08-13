@@ -17,6 +17,10 @@ exports.run = async (client, message, args, level) => {
       console.log(`Fetch took ${Date.now() - start}ms`);
       console.log(company);
       console.log(data);
+      if(!!data) {
+        message.reply(`Things don't appear to be working at the moment, give me a sec.`);
+        return;
+      }
       if(Object.keys(data).length === 0) {
         message.reply(`Invalid ticker [${company}]`);
       } else {
