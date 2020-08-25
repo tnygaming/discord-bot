@@ -147,6 +147,19 @@ module.exports = (client) => {
 
   /* MISCELANEOUS NON-CRITICAL FUNCTIONS */
   
+  /*
+   Retrieves the discord username from the user's discord id. 
+   */
+  client.getDiscordUsername = (discordId) => {
+    const userObj = client.users.cache.get(discordId);
+    if(userObj) {
+      return userObj.username;
+    }
+  
+    return '';
+  }
+
+
   // EXTENDING NATIVE TYPES IS BAD PRACTICE. Why? Because if JavaScript adds this
   // later, this conflicts with native code. Also, if some other lib you use does
   // this, a conflict also occurs. KNOWING THIS however, the following 2 methods

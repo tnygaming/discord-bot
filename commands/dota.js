@@ -39,7 +39,9 @@ async function getLatestMatch(client, channel, discordUser) {
     entry => 
       entry.channelId === channel.id && 
       entry.discordId === discordUser.id)
-  .map(entry => entry.dotaId)
+  .map(entry => entry.dotaIds)
+  .filter(entry => !!entry)
+  .flat()
   
   if (!dotaIds.length) {
     channel.send(`${discordUser.username} is not associated with a dota account`)
@@ -76,14 +78,20 @@ async function registerLink(client, channel, discordUser, dotaId) {
       if (!validateId(dotaInfo)) {
         channel.send(`could not find dota account for ${dotaId}`)
       }
-      const dotaConfKey = getConfKey(channel.id, discordUser.id, dotaId)
-      client.dotaConf.set(dotaConfKey, {
-        dotaId: dotaId,
+      const dotaConfKey = getConfKey(channel.id, discordUser.id)
+      const dotaConf = client.dotaConf.ensure(dotaConfKey, {
+        dotaIds: [],
         discordId: discordUser.id, 
         channelId: channel.id
       })
+      if (dotaConf.dotaIds.includes(dotaId)){
+        channel.send(`${discordUser.username} is already linked to account ${dotaInfo.profile.personaname}`)
+      }
+      else { 
+        client.dotaConf.push(dotaConfKey, dotaId, "dotaIds", false)
+        channel.send(`${discordUser.username} was linked to account ${dotaInfo.profile.personaname}`)
+      }
 
-      channel.send(`${discordUser.username} was linked to account ${dotaInfo.profile.personaname}`)
 }
 
 function formatSeconds(inputSeconds) {
@@ -95,8 +103,8 @@ function formatSeconds(inputSeconds) {
 /**
  * Generates the dotaConf composite key from channelId, discordId, and dotaID
  */
-function getConfKey(channelId, discordId, dotaId) {
-  return (`${channelId}-${discordId}-${dotaId}`)
+function getConfKey(channelId, discordId) {
+  return (`${channelId}-${discordId}`)
 }
 
 function validateId(dotaInfo) {
@@ -108,15 +116,6 @@ function sendHelp(channel) {
 .dota register [dota account id]  :: Links your discordId to the specified dota account id for the current channel. Account id can be found in your dotabuff profile url (https://www.dotabuff.com/players/<ACCOUNT_ID>)
 .dota getLatestMatch :: gets the latest match for your linked dota account(s).`,
   {code: 'asciidoc'});
-}
-
-function getDiscordUsername(client, discordId) {
-  const userObj = client.users.cache.get(discordId);
-  if(userObj) {
-    return userObj.username;
-  }
-
-  return '';
 }
 
 exports.conf = {

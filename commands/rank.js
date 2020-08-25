@@ -72,7 +72,7 @@ exports.run = async (client, message, args, level) => {
 
       if(result) {
 
-        channel.send(getUsername(client, userId) + " is: " + result.rank);
+        channel.send(client.getUsername(userId) + " is: " + result.rank);
       } else {
         channel.send("User not found");
       }
@@ -89,7 +89,7 @@ exports.run = async (client, message, args, level) => {
 
       // add data rows
       for(const data of sortedRanks) {
-        tableBoi.addRow([getUsername(client, data.userId), data.rank]);
+        tableBoi.addRow([client.getUsername(data.userId), data.rank]);
       }
 
       return message.channel.send(`\`\`\`
@@ -114,15 +114,6 @@ function sendRanks(channel) {
 
 function getRankIndex(rank) {
   return ALLOWED_RANKS.indexOf(rank); // todo: use Map instead of List for storing ranks to make this O(1)
-}
-
-function getUsername(client, userId) {
-  const userObj = client.users.cache.get(userId);
-  if(userObj) {
-    return userObj.username;
-  }
-
-  return "";
 }
 
 exports.conf = {
