@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/mynameisivan/discord-bot",
   "dependencies": {
+    "bent": "^7.3.10",
     "better-sqlite3": "^7.1.0",
     "bufferutil": "^4.0.1",
     "chalk": "^4.1.0",
