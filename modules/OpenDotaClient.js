@@ -14,7 +14,7 @@ async function getLatestMatch(dotaId) {
     return undefined
   }
   let latestStartTime = 0
-  let latestMatch = 0
+  let latestMatch = undefined
   let matchInfos = await limiter.schedule(() => dotaClient(`players/${dotaId}/recentMatches`))
   for (const matchInfo of matchInfos) {
     if (matchInfo.start_time > latestStartTime) {
