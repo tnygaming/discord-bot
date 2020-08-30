@@ -1,4 +1,5 @@
 const enmap = require('enmap')
+const discord = require('discord.js')
 const bent = require('bent')
 
 const dotaClient = require('../modules/OpenDotaClient')
