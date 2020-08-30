@@ -25,7 +25,7 @@ class RecentDotaMatchAnnouncer {
     }
 
     const currentTime = new Date().getMilliseconds()
-    if (currentTime - match.start_time < 93600) {
+    if (currentTime - match.start_time < 3600) {
       if (!this.candidateMatches.has(match.match_id) && !this.recentlyAnnouncedMatches.has(match.match_id)) {
         const detailedMatch = await dotaClient.getMatch(match.match_id)
         this.candidateMatches.set(match.match_id, detailedMatch)
@@ -59,8 +59,9 @@ class RecentDotaMatchAnnouncer {
           }
         })
         .filter(player => player != null)
-
-        this._announceMatch(client, channelId, importantPlayers, match)
+        if (importantPlayers.length) {
+          this._announceMatch(client, channelId, importantPlayers, match)
+        }
       }      
     }
     //fucking js map iterator decided to be in reverse.

@@ -50,7 +50,7 @@ async function getLatestMatch(client, channel, discordUser) {
 
   latestMatch = await dotaClient.getLatestMatch(dotaIds[0])
 
-  if (!!latestMatch) {
+  if (!!!latestMatch) {
     channel.send(`${discordUser.username} associated with dota accounts ${dotaIds} has not played a match recently`)
   }
   else {
