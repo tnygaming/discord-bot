@@ -9,6 +9,7 @@ const Discord = require("discord.js");
 const { promisify } = require("util");
 const readdir = promisify(require("fs").readdir);
 const Enmap = require("enmap");
+const DiscordClientAwareScheduler = require("./modules/DiscordClientAwareScheduler.js");
 
 // This is your client. Some people call it `bot`, some people call it `self`,
 // some might call it `cootchie`. Either way, when you see `client.something`,
@@ -63,6 +64,15 @@ const init = async () => {
     // provided by the discord.js event. 
     // This line is awesome by the way. Just sayin'.
     client.on(eventName, event.bind(null, client));
+  });
+
+  // Then we load schedulables, which will include any background processes that need to run. 
+  const scheduler = new DiscordClientAwareScheduler(client)
+  const schedulableFiles = await readdir("./schedulables");
+  client.logger.log(`Loading a total of ${schedulableFiles.length} schedulables.`);
+  schedulableFiles.forEach(file => {
+    const response = scheduler.register(file);
+    if (response) console.log(response);
   });
 
   // Generate a cache of client permissions for pretty perm names in commands.
