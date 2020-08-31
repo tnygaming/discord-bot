@@ -4,11 +4,10 @@
   "description": "A Discord bot dedicated to serving the best CS:GO/Valorant/Overwatch/SC2 Squadron TD/Killing Floor 2/Among Us players in the universe.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "postinstall": "node setup.js"
+    "start": "node index.js"
   },
   "engines": {
-    "node": ">=8"
+    "node": ">=12"
   },
   "repository": {
     "type": "git",
