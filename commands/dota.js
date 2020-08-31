@@ -16,16 +16,27 @@ exports.run = async (client, message, args, level) => {
   const author = message.author
 
   const subcommand = args[0]
-
+  let dotaId = undefined
+  let discordUser = undefined
   if(!subcommand) {
     return sendHelp(channel)
   }
 
   switch(subcommand) {
     case 'register':
-      const dotaId = args[1]
+      dotaId = args[1]
       await registerLink(client, channel, author, dotaId)
       break
+    case 'deregister': 
+      dotaId = args[1]
+      await deregisterLink(client, channel, author, dotaId) 
+      break
+    case 'whois': 
+      discordUser = client.parseDiscordUser(args[1])
+      if (discordUser == undefined) {
+        channel.send(`could not find the discordUser for ${args[1]}`)
+      }
+      await getDotaAccounts(client, channel, discordUser)
     case 'getLatestMatch':
       await getLatestMatch(client, channel, author)
       break
@@ -33,6 +44,20 @@ exports.run = async (client, message, args, level) => {
       return sendHelp(channel)
   }
 };
+
+async function getDotaAccounts(client, channel, discordUser) {
+  const dotaConf = client.dotaConf.get(getConfKey(channel.id, discordUser.id))
+  let playerLinks = []
+  for (dotaId of dotaConf.dotaIds) {
+    const dotaAccount = await dotaClient.getPlayer(dotaId)
+    playerLinks.push(buildPlayerLink(dotaAccount.profile))
+  }
+  const embedMsg = new discord.MessageEmbed()
+      .setColor('#0099ff')
+      .setTitle(`${discordUser.username} dota accounts`)
+      .setDescription(`${discordUser.username} is associated with ${playerLinks}`)
+    channel.send(embedMsg)
+}
 
 async function getLatestMatch(client, channel, discordUser) {
   const dotaIds = client.dotaConf
@@ -84,6 +109,25 @@ async function registerLink(client, channel, discordUser, dotaId) {
   }
 }
 
+async function deregisterLink(client, channel, discordUser, dotaId) {
+  const dotaConfKey = getConfKey(channel.id, discordUser.id)
+  const dotaConf = client.dotaConf.ensure(dotaConfKey, {
+    dotaIds: [],
+    discordId: discordUser.id, 
+    channelId: channel.id
+  })
+  if (dotaConf.dotaIds.includes(dotaId)) {
+    client.dotaConf.remove(dotaConfKey, dotaId, 'dotaIds')
+    channel.send(`${discordUser.username} was unlinked from account ${dotaId}`)
+  }
+  else {
+    channel.send(`${discordUser.username} is not linked to ${dotaId}`)
+  }
+}
+
+function buildPlayerLink(player) {
+  return (`[${player.personaname} (${player.account_id})](https://www.opendota.com/players/${player.account_id})`)
+}
 /**
  * Generates the dotaConf composite key from channelId, discordId, and dotaID
  */
@@ -97,7 +141,9 @@ function validateId(dotaInfo) {
 
 function sendHelp(channel) {
   return channel.send(`= USAGE =
-.dota register [dota account id]  :: Links your discordId to the specified dota account id for the current channel. Account id can be found in your dotabuff profile url (https://www.dotabuff.com/players/<ACCOUNT_ID>)
+.dota register [dota account id]  :: Links your discordId to the specified dota account id for the current channel. Account id can be found in your opendota profile url (https://www.opendota.com/players/<ACCOUNT_ID>)
+.dota deregister [dota account id] :: Unlinks your discordId to the specified dota account id for the current channel. 
+.dota whois [@discordUser] :: Provides opendota links for dota accounts the discord user is linked to. 
 .dota getLatestMatch :: gets the latest match for your linked dota account(s).`,
   {code: 'asciidoc'});
 }
