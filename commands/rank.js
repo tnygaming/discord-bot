@@ -57,22 +57,18 @@ exports.run = async (client, message, args, level) => {
 
       break;
     case "get":
-      const userArg = args[1];
-
-      if(!userArg || !userArg.startsWith("<@")) {
+     const discordUser = client.parseDiscordUser(args[1]);
+      if (discordUser == undefined) {
         // missing/wrong argument, send help
         return sendHelp(channel);
       }
 
-      // extract userId
-      const userId = userArg.replace(/[<@!>]/g, '');
-
        // retrieve data for user
-      const result = client.ranks.get(userId);
+      const result = client.ranks.get(discordUser.id);
 
       if(result) {
 
-        channel.send(client.getUsername(userId) + " is: " + result.rank);
+        channel.send(discordUser.username + " is: " + result.rank);
       } else {
         channel.send("User not found");
       }

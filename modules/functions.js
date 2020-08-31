@@ -159,6 +159,18 @@ module.exports = (client) => {
     return '';
   }
 
+  /**
+   * Retrieves the discord user from the user's alias. e.g.
+   * <@!258094203482> -> discord user for 258094203482
+   */
+  client.parseDiscordUser = (discordAlias) => {
+    if (!discordAlias || !discordAlias.startsWith("<@")) {
+      return undefined
+    }
+
+    const discordId = discordAlias.replace(/[<@!>]/g, '');
+    return client.users.cache.get(discordId)
+  }
 
   // EXTENDING NATIVE TYPES IS BAD PRACTICE. Why? Because if JavaScript adds this
   // later, this conflicts with native code. Also, if some other lib you use does
