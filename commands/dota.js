@@ -37,6 +37,7 @@ exports.run = async (client, message, args, level) => {
         channel.send(`could not find the discordUser for ${args[1]}`)
       }
       await getDotaAccounts(client, channel, discordUser)
+      break
     case 'getLatestMatch':
       await getLatestMatch(client, channel, author)
       break
