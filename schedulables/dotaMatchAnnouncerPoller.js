@@ -75,7 +75,7 @@ class RecentDotaMatchAnnouncer {
     let radiantPlayers = []
     let direPlayers = []
     for(const player of match.players) {
-      let importantPlayer = importantPlayers.find(p => p.dotaId == player.account_id)
+      let importantPlayer = importantPlayers.find(p => player.account_id != undefined && p.dotaId == player.account_id)
       
       let playerName = `${player.personaname} ${importantPlayer == null ? '' : '(' + importantPlayer.discordName + ')'}` 
       if (player.isRadiant) {
@@ -95,11 +95,11 @@ More info at [opendota](https://www.opendota.com/matches/${match.match_id}) [dot
       .addFields(
         {
           name: 'Radiant Players',
-          value: `${radiantPlayers.join('\n')}`
+          value: `${radiantPlayers.length ? radiantPlayers.join('\n') : 'N/A'}`
         },
         {
           name: 'Dire Players',
-          value: `${direPlayers.join('\n')}`
+          value: `${direPlayers.length ? direPlayers.join('\n') : 'N/A'}`
         }
       )
     channel.send(embedMsg)
@@ -110,11 +110,13 @@ More info at [opendota](https://www.opendota.com/matches/${match.match_id}) [dot
     .flatMap(entry => {
       let result = []
       for (const dotaId of entry.dotaIds) {
-        result.push({
-          dotaId: dotaId,
-          discordId: entry.discordId, 
-          channelId: entry.channelId
-        })
+        if (dotaId != undefined) {
+          result.push({
+            dotaId: dotaId,
+            discordId: entry.discordId, 
+            channelId: entry.channelId
+          })
+        }
       }
       return result
     })
