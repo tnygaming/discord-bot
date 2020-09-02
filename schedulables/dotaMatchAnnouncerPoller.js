@@ -24,7 +24,7 @@ class RecentDotaMatchAnnouncer {
       return
     }
 
-    const currentTime = new Date().getMilliseconds()
+    const currentTime = new Date().getSeconds()
     if (currentTime - match.start_time < 3600) {
       if (!this.candidateMatches.has(match.match_id) && !this.recentlyAnnouncedMatches.has(match.match_id)) {
         const detailedMatch = await dotaClient.getMatch(match.match_id)
