@@ -139,5 +139,5 @@ module.exports.run = async (client) => {
 }
 
 module.exports.conf = {
-  cron: '* * * * *'
+  cron: '*/20 * * * *'
 }
