@@ -38,9 +38,6 @@ client.aliases = new Enmap();
 // and makes things extremely easy for this purpose.
 client.settings = new Enmap({name: "settings"});
 
-// Data for Camping Reservation checker
-client.rezData = new Enmap({name: "rezData"});
-
 // We're doing real fancy node 8 async/await stuff here, and to do that
 // we need to wrap stuff in an anonymous function. It's annoying but it works.
 
@@ -64,12 +61,12 @@ const init = async () => {
     client.logger.log(`Loading Event: ${eventName}`);
     const event = require(`./events/${file}`);
     // Bind the client to any event, before the existing arguments
-    // provided by the discord.js event.
+    // provided by the discord.js event. 
     // This line is awesome by the way. Just sayin'.
     client.on(eventName, event.bind(null, client));
   });
 
-  // Then we load schedulables, which will include any background processes that need to run.
+  // Then we load schedulables, which will include any background processes that need to run. 
   const scheduler = new DiscordClientAwareScheduler(client)
   const schedulableFiles = await readdir("./schedulables");
   client.logger.log(`Loading a total of ${schedulableFiles.length} schedulables.`);

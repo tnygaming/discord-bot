@@ -85,7 +85,7 @@ exports.run = async (client, message, args, level) => {
 
       // add data rows
       for(const data of sortedRanks) {
-        tableBoi.addRow([client.getDiscordUsername(data.userId), data.rank]);
+        tableBoi.addRow([client.getUsername(data.userId), data.rank]);
       }
 
       return message.channel.send(`\`\`\`

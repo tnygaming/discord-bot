@@ -10,24 +10,11 @@
     +------------+----------+
 */
 class TableBoi {
-
-  /*
-   * Helper method to reduce boilerplate code
-   */
-  static getTableString(headers, rows) {
-    return new TableBoi(headers, rows).getTableString();
-  }
-
   /*
    * @param headers (required) list of column headers
-   * @param rows (optional)
    */
-  constructor(headers, rows) {
+  constructor(headers) {
     this.rows = [headers];
-
-    if(rows) {
-      this.rows.push(...rows);
-    }
   }
 
   /*
@@ -50,12 +37,12 @@ class TableBoi {
     });
 
     // generate horizontal separator
-    const horizontalSeparator = _getHorizontalSeparatorStr(colLengths);
+    const horizontalSeparator = getHorizontalSeparatorStr(colLengths);
 
     // generate each row and concatenate together
     let bodyStr = "";
     this.rows.forEach(function (row, index) {
-      bodyStr += _getRowStr(colLengths, row, "|", " ");
+      bodyStr += getRowStr(colLengths, row, "|", " ");
 
       // add horizontal separarator after header row
       if(index == 0) {
@@ -67,7 +54,7 @@ class TableBoi {
   }
 }
 
-function _getRowStr(colLengths, rowVals, separator, filler) {
+function getRowStr(colLengths, rowVals, separator, filler) {
   // get list of row values with necessary filler added
   const spacedVals = rowVals.map(function(val, index) {
     return filler + val + filler.repeat(colLengths[index] - val.length) + filler;
@@ -77,8 +64,8 @@ function _getRowStr(colLengths, rowVals, separator, filler) {
   return separator + spacedVals.join(separator) + separator + "\n";
 }
 
-function _getHorizontalSeparatorStr(colLengths) {
-  return _getRowStr(colLengths, new Array(colLengths.length).fill(""), "+", "-");
+function getHorizontalSeparatorStr(colLengths) {
+  return getRowStr(colLengths, new Array(colLengths.length).fill(""), "+", "-");
 }
 
 module.exports = TableBoi;
