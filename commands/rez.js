@@ -15,17 +15,13 @@ exports.run = async (client, message, args, level) => {
 
   switch(subcommand) {
     case 'check':
-      await check(channel, month)
-      break
+      return await check(channel, month)
     case 'watch':
-      await watch(client, channel, author, month)
-      break
+      return await watch(client, channel, author, month)
     case 'unwatch':
-      await unwatch(client, channel, author, month)
-      break
+      return await unwatch(client, channel, author, month)
     case 'watchlist':
-      await watchlist(client, channel, author)
-      break
+      return await watchlist(client, channel, author)
     default:
       return sendHelp(channel)
   }
@@ -33,13 +29,8 @@ exports.run = async (client, message, args, level) => {
 
 async function check(channel, month) {
   const reservations = await rezClient.getReservations(month)
-
   if(reservations.size) {
-    channel.send(`\`\`\`
-${rezClient.getAsTable(reservations)}
-\`\`\``);
-  } else {
-    channel.send(`No reservations for month: ${month}`)
+    channel.send(rezClient.getEmbed(reservations, month))
   }
 }
 
@@ -52,6 +43,7 @@ async function watch(client, channel, discordUser, month) {
   }
 
   _sendWatchList(client, channel, key)
+  check(channel, month)
 }
 
 async function unwatch(client, channel, discordUser, month) {
@@ -78,11 +70,11 @@ function _getUserData(client, userId) {
 }
 
 function _getMonth(month) {
-  if(!month) {
-    month = new Date().getMonth() + 1
+  if(!month || !(month >=1 && month <= 12)) {
+    month = new Date().getMonth() + 1 // get current month, + 1 since it JS months are 0-indexed
   }
 
-  return month.toString().padStart(2, '0');
+  return month
 }
 
 function _sendWatchList(client, channel, userId) {

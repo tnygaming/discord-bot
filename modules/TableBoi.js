@@ -63,7 +63,7 @@ class TableBoi {
       }
     });
 
-    return horizontalSeparator + bodyStr + horizontalSeparator;
+    return `\n${horizontalSeparator}${bodyStr}${horizontalSeparator}`
   }
 }
 

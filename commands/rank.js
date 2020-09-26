@@ -52,12 +52,15 @@ exports.run = async (client, message, args, level) => {
           rank: rank
         });
 
-        channel.send(message.author.username + "'s rank set to: " + rank);
+        channel.send(`${message.author.username}'s rank has been set to: ${rank}`);
       }
 
       break;
+    case "reset":
+      reset(client, message, channel, args[1])
+      break;
     case "get":
-     const discordUser = client.parseDiscordUser(args[1]);
+      const discordUser = client.parseDiscordUser(args[1]);
       if (discordUser == undefined) {
         // missing/wrong argument, send help
         return sendHelp(channel);
@@ -67,8 +70,7 @@ exports.run = async (client, message, args, level) => {
       const result = client.ranks.get(discordUser.id);
 
       if(result) {
-
-        channel.send(discordUser.username + " is: " + result.rank);
+        channel.send(`${discordUser.username}'s rank is: ${result.rank}`);
       } else {
         channel.send("User not found");
       }
@@ -96,11 +98,29 @@ ${tableBoi.getTableString()}
   }
 };
 
+function reset(client, message, channel, userId) {
+  if(client.permlevel(message) < 3) {
+    return channel.send(`You must be Admin or higher to use this command`);
+  }
+
+  const discordUser = client.parseDiscordUser(userId);
+  if (discordUser == undefined) {
+    return sendHelp(channel); // missing/wrong argument, send help
+  }
+
+  // retrieve data for user
+  client.ranks.delete(discordUser.id)
+
+  const result = client.ranks.get(discordUser.id);
+  channel.send(`${discordUser.username}'s rank has been reset`);
+}
+
 function sendHelp(channel) {
   return channel.send(`= USAGE =
-.rank set [rank]  :: Sets current user's rank
-.rank get [@user] :: Returns target user's rank
-.rank leaderboard :: Returns leaderboard of all users and their ranks`,
+.rank set [rank]    :: Sets current user's rank
+.rank get [@user]   :: Returns target user's rank
+.rank reset [@user] :: Resets target user's rank (Admin only)
+.rank leaderboard   :: Displays all users and their ranks`,
   {code: "asciidoc"});
 }
 
