@@ -2,24 +2,45 @@ const enmap = require('enmap')
 const discord = require('discord.js')
 const rezClient = require('../modules/CampingReservationClient')
 var _ = require('underscore')
-const { conf } = require('../commands/dota')
 const TableBoi = require("../modules/TableBoi");
 
-// reservations from previous run, used to figure out the new reservations
-const previousReservations = new Map()
+const oldRezData = new enmap({name: "oldRezData"})
 
-function getNewReservations(month, reservations) {
-  const previousReservationsForMonth = previousReservations.get(month)
-  previousReservations.set(month, reservations)
+// reservations from previous run, months => campIds => sites => days
+const oldData = oldRezData.ensure("default", new Map())
 
-  if(!previousReservationsForMonth) {
-    return reservations // first run
+function getNewReservations(month, currentMonthData) {
+  console.log(`currentMonthData: ${JSON.stringify(Array.from(currentMonthData))}`)
+
+  const oldMonthData = _getOldAndSetCurrent(oldData, month, currentMonthData)
+
+  if(!oldMonthData) {
+    return currentMonthData // first run
   }
 
-  // remove the sites where the dates haven't changed
+  console.log(`oldMonthData: ${JSON.stringify(Array.from(oldMonthData))}`)
+
+  const newCamps = new Map()
+
+  for (const [campId, currentSites] of currentMonthData.entries()) {
+    // for each camp, calculate difference
+    const oldSites = _getOldAndSetCurrent(oldMonthData, campId, currentSites)
+    const newSites = getNewSites(currentSites, oldSites)
+
+    if(newSites.size) {
+      newCamps.set(campId, newSites)
+    }
+  }
+
+  console.log(`newCamps: ${JSON.stringify(Array.from(newCamps))}`)
+
+  return newCamps
+}
+
+function getNewSites(reservations, oldReservations) {
   const newReservations = new Map(reservations)
   newReservations.forEach((currentDates, site, map) => {
-    const previousDates = previousReservationsForMonth.get(site);
+    const previousDates = oldReservations.get(site);
     if(!_.difference(currentDates, previousDates).length) {
       map.delete(site)
     }
@@ -45,6 +66,12 @@ function getMonthsToWatchers(client) {
   return monthsToUsers
 }
 
+function _getOldAndSetCurrent(map, key, newValue) {
+  const oldValue = map.get(key)
+  map.set(key, newValue)
+  return oldValue
+}
+
 module.exports.run = async (client) => {
   const monthsToWatchers = getMonthsToWatchers(client)
   const monthsToCheck = [...monthsToWatchers.keys()]
@@ -58,16 +85,13 @@ module.exports.run = async (client) => {
 
     // notify watchers
     if(newReservations.size) {
-      const newTable = rezClient.getAsTable(newReservations)
+      const embed = rezClient.getEmbed(newReservations, month)
       const watchers = monthsToWatchers.get(month).map(userId => client.users.cache.get(userId))
 
       console.log(`Notifying [${watchers.length}] watchers about [${month}]`)
 
       for(const watcher of watchers) {
-        watcher.send(`\`\`\`
-New reservations for [${month}]:
-${newTable}
-\`\`\``);
+        watcher.send(embed)
       }
     }
   }
