@@ -10,15 +10,11 @@ const oldRezData = new enmap({name: "oldRezData"})
 const oldData = oldRezData.ensure("default", new Map())
 
 function getNewReservations(month, currentMonthData) {
-  console.log(`currentMonthData: ${JSON.stringify(Array.from(currentMonthData))}`)
-
   const oldMonthData = _getOldAndSetCurrent(oldData, month, currentMonthData)
 
   if(!oldMonthData) {
     return currentMonthData // first run
   }
-
-  console.log(`oldMonthData: ${JSON.stringify(Array.from(oldMonthData))}`)
 
   const newCamps = new Map()
 
@@ -31,8 +27,6 @@ function getNewReservations(month, currentMonthData) {
       newCamps.set(campId, newSites)
     }
   }
-
-  console.log(`newCamps: ${JSON.stringify(Array.from(newCamps))}`)
 
   return newCamps
 }
@@ -76,7 +70,7 @@ module.exports.run = async (client) => {
   const monthsToWatchers = getMonthsToWatchers(client)
   const monthsToCheck = [...monthsToWatchers.keys()]
 
-  console.log(`Checking: [${monthsToCheck}]`)
+  console.log(`Checking months: [${monthsToCheck}]`)
 
   for (const month of monthsToCheck) {
     // Check availability in month and get new availabilities
@@ -91,7 +85,9 @@ module.exports.run = async (client) => {
       console.log(`Notifying [${watchers.length}] watchers about [${month}]`)
 
       for(const watcher of watchers) {
-        watcher.send(embed)
+        if(watcher) {
+          watcher.send(embed)
+        }
       }
     }
   }
