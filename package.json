@@ -25,7 +25,7 @@
     "bent": "^7.3.12",
     "better-sqlite3": "^7.1.1",
     "bottleneck": "^2.19.5",
-    "bufferutil": "^4.0.2",
+    "bufferutil": "^4.0.3",
     "chalk": "^4.1.0",
     "discord.js": "^12.4.1",
     "enmap": "^5.8.2",
