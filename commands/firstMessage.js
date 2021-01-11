@@ -1,26 +1,19 @@
-const addReactions = (message, reactions) => {
-    message.react(reactions[0])
-    reactions.shift()
-    if (reactions.length > 0) {
-        setTimeout (() => addReactions(message, reacctions), 700)
-    }
-}
-
-module.exports = async (client, id, text, reactions = []) => {
-    const channel = await client.channels.fetch(id)
-
-    channel.messages.fetch().then((messages) => {
-        if (messages.size === 0) {
-            //send a new message
-            channel.send(text).then(message => {
-                addReactions(message, reactions)
-            })
-        } else {
-            // edit an existing message
-            for (const message of messages) {
-                message[1].edit(text)
-                addReactions(message[1], reactions)
-            }
-        }
-    })
-} 
+exports.run = async (client, message, args, level) => { 
+    const msg = await message.channel.send("Welcome");
+    msg.edit(`Welcome!`);
+  };
+  
+  exports.conf = {
+    enabled: true,
+    guildOnly: false,
+    aliases: [],
+    permLevel: "User"
+  };
+  
+  exports.help = {
+    name: "firstMessage",
+    category: "Miscellaneous",
+    description: "Sending and editing the first message.",
+    usage: "firstMessage"
+  };
+  

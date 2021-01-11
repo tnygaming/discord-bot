@@ -1,12 +1,7 @@
-const firstMessage = require('./firstMessage')
-
 exports.run = async (client, message, args, level) => { 
-    
-};
-  
-
-
-
+    const msg = await message.channel.send("paca");
+    msg.edit(`paca DEEZ NUTS!`);
+  };
   
   exports.conf = {
     enabled: true,
@@ -15,5 +10,10 @@ exports.run = async (client, message, args, level) => {
     permLevel: "User"
   };
   
-
+  exports.help = {
+    name: "paca",
+    category: "Miscellaneous",
+    description: "for reacting to roles.",
+    usage: "role"
+  };
   
