@@ -15,7 +15,8 @@ module.exports = async (client) => {
 
     const reactions = []
 
-    let emojiText = 'Testing 1 2 3\n'
+    //TODO: maybe add this as an embed
+    let emojiText = 'Welcome to TNY!\nWe are chill group of homies who suck at games.\nYou\'ll usually catch us playing our main squeeze: Counter-Strike, but we also play other FPS games and party games!\n\nThese roles are focused on the many games we play in this discord.\nPlease react to the corresponding role and you will be added to that game\'s role and will be notified with an \'@\' in the chat when anyone is looking for a party.\nPlease remember use the \'@\' symbol followed by the game role when you are looking for a party!\n\n'
     for (const key in emojis) {
         const emoji = getEmoji(key)
         reactions.push(emoji)
@@ -31,7 +32,6 @@ module.exports = async (client) => {
             return
         }
 
-        //console.log(reaction)
 
         const emoji = reaction._emoji.name
 
