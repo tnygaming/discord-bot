@@ -54,21 +54,16 @@ module.exports = async (client) => {
 
     client.on('messageReactionAdd', (reaction, user) => {
         if (reaction.message.channel.id === channelId){
-            //console.log('add')
             handleReaction(reaction, user, true)
         }
     })
 
     client.on('messageReactionRemove', (reaction, user) => {
         if (reaction.message.channel.id === channelId){
-            //console.log('remove')
             handleReaction(reaction, user, false)
         }
     })
 
 };
 
-// module.exports = (client) => {
-
-// }
   
