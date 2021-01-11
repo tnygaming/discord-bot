@@ -21,7 +21,7 @@ module.exports = async (client) => {
     const reactions = []
 
     //TODO: maybe add this as an embed
-    let emojiText = 'Welcome to TNY! We are chill group of homies who suck at games.\n\nYou\'ll usually catch us playing our main squeeze: Counter-Strike, but we also play other FPS games and party games!\nThese roles are focused on the many games and other hobbies we play/watch in this discord.\nPlease remember use the \'@\' symbol followed by the game role when you are looking for a party!\n\nReact to the corresponding role and you will be added to that game\'s role and will be notified with an \'@\' in the chat when anyone is looking for a party.\n'
+    let emojiText = 'Welcome to TNY! We are chill group of homies who suck at games.\n\nYou\'ll usually catch us playing our main squeeze: Counter-Strike, but we also play other FPS games and party games!\nThese roles are focused on the many games and other hobbies we play/watch in this discord.\nPlease remember use the \'@\' symbol followed by the game role when you are looking for a party!\n\nReact to the corresponding role and you will be added to that game\'s role and will be notified with an \'@\' in the chat when anyone is looking for a party. Unreact to remove yourself from that role.\n'
     for (const key in emojis) {
         const emoji = getEmoji(key)
         reactions.push(emoji)
