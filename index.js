@@ -10,6 +10,7 @@ const { promisify } = require("util");
 const readdir = promisify(require("fs").readdir);
 const Enmap = require("enmap");
 const DiscordClientAwareScheduler = require("./modules/DiscordClientAwareScheduler.js");
+const roleClaim = require('./modules/roleReaction')
 
 // This is your client. Some people call it `bot`, some people call it `self`,
 // some might call it `cootchie`. Either way, when you see `client.something`,
@@ -88,7 +89,12 @@ const init = async () => {
   // Here we login the client.
   client.login(client.config.token);
 
+  
+
 // End top-level async/await function.
 };
+client.on('ready', () =>  {
+  roleClaim(client);
+})
 
 init();
