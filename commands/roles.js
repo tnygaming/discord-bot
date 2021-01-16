@@ -2,10 +2,12 @@ const Enmap = require("enmap");
 
 const BLACKLISTED_ROLES = [
   "Admin",
-  "Moderator"
+  "Moderator",
+  "tnydotatoes"
 ];
 
-/*
+/* 
+** Migration for existing roles **
 .eval client.rolesData.set('143146071814569986', [
   "tarkov",
   "tnydotatoes",
