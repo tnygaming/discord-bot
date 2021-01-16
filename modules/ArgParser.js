@@ -5,7 +5,7 @@ const magic = /[^\s"]+|"([^"]*)"/gi;
  * multi word arguments wrapped by quotes. e.g.
  *    "some long first input" second "third input" 
  *    becomes: 
- *      ["some long first input", "second", "third"]
+ *      ["some long first input", "second", "third input"]
  * 
  * @param {args from a discord.js command} args 
  */
