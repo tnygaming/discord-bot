@@ -7,7 +7,7 @@ const numEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️�
  * Quick and Dirty poller. 
  */
 class Poll {
-	constructor(msg, question, answers) {
+	constructor(msg, question, answers, useNumberEmojis) {
 		if (msg) {
 			this.guildId = msg.guild.id;
 			this.channelId = msg.channel.id;
@@ -16,7 +16,8 @@ class Poll {
 			this.answers = answers;
 			this.createdOn = Date.now();
 			this.results = [];
-			this.id = this._generateId();
+      this.id = this._generateId();
+      this.useNumberEmojis = useNumberEmojis;
 		}
 	}
 
@@ -33,7 +34,8 @@ class Poll {
 		p.answers = other.answers;
 		p.createdOn = other.createdOn;
 		p.results = other.results;
-		p.id = other.id;
+    p.id = other.id;
+    p.useNumberEmojis = other.useNumberEmojis;
 
 		return p;
 	}
@@ -44,23 +46,33 @@ class Poll {
    * @param {Discord.Channel} the channel to send the poll to
    */
 	async start(channel) {
-		const message = await channel.send({ embed: this._generateEmbed() })
-		this.msgId = message.id;
+    const emojis = this._getEmojis(channel.guild.emojis);
+		const message = await channel.send({ embed: this._generateEmbed(emojis) });
+    this.msgId = message.id;
 		for (let i = 0; i < this.answers.length && i < 10; ++i) {
 			try {
-				await message.react(this.emojis[i]);
+				await message.react(emojis[i]);
 			} catch (error) {
 				console.log(error);
 			}
 		}
 		return message.id;
-	}
+  }
+  
+  _getEmojis(emojiMgr) {
+    if (this.useNumberEmojis) {
+      return numEmojis;
+    }
+    return emojiMgr.cache.array()
+      .filter(emoji => emoji.animated == false && emoji.available)
+      .sort(() => .5 - Math.random());
+  }
 
-	_generateEmbed() {
+	_generateEmbed(emojis) {
 		let str = new String();
 
     for (let i = 0; i < this.answers.length && i < 10; i++) {
-      str += `${numEmojis[i]}. ${this.answers[i]}\n`;
+      str += `${emojis[i]}. ${this.answers[i]}\n`;
     }
 
 		let embed = new Discord.MessageEmbed()
