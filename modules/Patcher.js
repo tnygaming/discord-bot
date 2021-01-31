@@ -7,11 +7,6 @@ const readdir = require("fs").readdirSync;
  * Please make sure that your patches are idempotent. 
  */
 function applyPatches() {
-  patchHistory.set('p1.js', false);
-  const rolesV1 = new Enmap({name: 'rolesData'});
-  const rolesV2 = new Enmap({name: 'rolesDataV2'});
-  rolesV1.clear();
-  rolesV2.clear();
   console.log(`patches begin`);
   //readdir uses process.cwd instead of __dirname, so use root dir as rel path.
   const patches = readdir("./patches"); 
