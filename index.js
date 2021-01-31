@@ -11,7 +11,7 @@ const readdir = promisify(require("fs").readdir);
 const Enmap = require("enmap");
 const DiscordClientAwareScheduler = require("./modules/DiscordClientAwareScheduler.js");
 const roleClaim = require('./modules/roleReaction')
-
+const Patcher = require('./modules/Patcher')
 // This is your client. Some people call it `bot`, some people call it `self`,
 // some might call it `cootchie`. Either way, when you see `client.something`,
 // or `bot.something`, this is what we're refering to. Your client.
@@ -46,7 +46,8 @@ client.rezData = new Enmap({name: "rezData"});
 // we need to wrap stuff in an anonymous function. It's annoying but it works.
 
 const init = async () => {
-
+  // Apply any patches 
+  Patcher.applyPatches();
   // Here we load **commands** into memory, as a collection, so they're accessible
   // here and everywhere else.
   const cmdFiles = await readdir("./commands/");
