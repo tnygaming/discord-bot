@@ -20,9 +20,7 @@ const ALLOWED_RANKS = [
   "Diamond1",
   "Diamond2",
   "Diamond3",
-  "Immortal1",
-  "Immortal2",
-  "Immortal3",
+  "Immortal",
   "Radiant"
 ].reverse();
 
