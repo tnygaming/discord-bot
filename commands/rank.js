@@ -52,7 +52,7 @@ exports.run = async (client, message, args, level) => {
           rank: rank
         });
        // retrieve data for user
-        const oldRank = client.ranks.get(discordUser.id);
+        const oldRank = client.ranks.get(key);
         if (oldRank) {
           channel.send(`${message.author.username}'s rank has been set to: ${rank}. Was ${oldRank}`);
         } else {
