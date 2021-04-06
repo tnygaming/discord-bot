@@ -45,14 +45,14 @@ exports.run = async (client, message, args, level) => {
         return sendRanks(channel);
       } else {
         const key = message.author.id;
-
+        // retrieve data for user
+        const oldRank = client.ranks.get(key);
         // save rank
         client.ranks.set(key, {
           userId: key,
           rank: rank
         });
-       // retrieve data for user
-        const oldRank = client.ranks.get(key);
+
         if (oldRank) {
           channel.send(`${message.author.username}'s rank was updated from ${oldRank.rank} to ${rank}`);
         } else {
