@@ -11,4 +11,7 @@ https://discordjs.guide/
 3. Verify keys are in config.js (and add the custom ones)
 4. `npm start` to start the bot.
 
+### ES Lint
+Please run ES Lint in the root directory as `npx eslint .` and help keep codebase clean! :)
+
 Thank you for reading!
