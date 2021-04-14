@@ -1,5 +1,3 @@
-const enmap = require('enmap')
-const discord = require('discord.js')
 const rezClient = require('../modules/CampingReservationClient')
 
 exports.run = async (client, message, args, level) => {
@@ -7,13 +5,13 @@ exports.run = async (client, message, args, level) => {
   const author = message.author
 
   const subcommand = args[0]
-  if(!subcommand) {
+  if (!subcommand) {
     return sendHelp(channel)
   }
 
   const month = _getMonth(args[1])
 
-  switch(subcommand) {
+  switch (subcommand) {
     case 'check':
       return await check(channel, month)
     case 'watch':
@@ -29,7 +27,7 @@ exports.run = async (client, message, args, level) => {
 
 async function check(channel, month) {
   const reservations = await rezClient.getReservations(month)
-  if(reservations.size) {
+  if (reservations.size) {
     channel.send(rezClient.getEmbed(reservations, month))
   }
 }
@@ -58,19 +56,18 @@ async function unwatch(client, channel, discordUser, month) {
 }
 
 async function watchlist(client, channel, discordUser) {
-  const key = discordUser.id;
   _sendWatchList(client, channel, discordUser.id)
 }
 
 function _getUserData(client, userId) {
   return client.rezData.ensure(userId, {
     monthsToCheck: [],
-    userId: userId
+    userId
   })
 }
 
 function _getMonth(month) {
-  if(!month || !(month >=1 && month <= 12)) {
+  if (!month || !(month >= 1 && month <= 12)) {
     month = new Date().getMonth() + 1 // get current month, + 1 since it JS months are 0-indexed
   }
 
@@ -82,12 +79,14 @@ function _sendWatchList(client, channel, userId) {
 }
 
 function sendHelp(channel) {
-  return channel.send(`= USAGE =
+  return channel.send(
+`= USAGE =
 .rez check [month]   :: Displays the available reservations for the month
 .rez watch [month]   :: Start watching the given month for new reservations, you will get a DM when there are new reservations.
 .rez unwatch [month] :: Stop watching the given month
 .rez watchlist       :: Returns the months currently being watched`,
-  {code: 'asciidoc'});
+  {code: 'asciidoc'}
+);
 }
 
 exports.conf = {

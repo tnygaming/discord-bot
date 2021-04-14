@@ -2,10 +2,10 @@ const bent = require('bent')
 const Bottleneck = require('bottleneck')
 const dotaClient = bent('https://api.opendota.com/api/', 'json', 200)
 
-//rate limited according to open dota specs (60/min)
+// rate limited according to open dota specs (60/min)
 const limiter = new Bottleneck({
-  reservoir: 60, 
-  reservoirRefreshAmount: 60, 
+  reservoir: 60,
+  reservoirRefreshAmount: 60,
   reservoirRefreshInterval: 60 * 1000
 })
 
@@ -14,7 +14,7 @@ async function getLatestMatch(dotaId) {
     return undefined
   }
   let latestStartTime = 0
-  let latestMatch = undefined
+  let latestMatch
   let matchInfos = await limiter.schedule(() => dotaClient(`players/${dotaId}/recentMatches`))
   for (const matchInfo of matchInfos) {
     if (matchInfo.start_time > latestStartTime) {

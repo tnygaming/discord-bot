@@ -56,7 +56,7 @@ exports.run = async (client, message, [action, key, ...value], level) => { // es
       message.reply(`${key} was successfully reset to default.`);
     } else
     // If they respond with n or no, we inform them that the action has been cancelled.
-    if (["n","no","cancel"].includes(response)) {
+    if (["n", "no", "cancel"].includes(response)) {
       message.reply(`Your setting for \`${key}\` remains at \`${settings[key]}\``);
     }
   } else
@@ -69,8 +69,8 @@ exports.run = async (client, message, [action, key, ...value], level) => { // es
   } else {
     // Otherwise, the default action is to return the whole configuration;
     const array = [];
-    Object.entries(settings).forEach(([key, value]) => {
-      array.push(`${key}${" ".repeat(20 - key.length)}::  ${value}`); 
+    Object.entries(settings).forEach(([k, v]) => {
+      array.push(`${k}${" ".repeat(20 - k.length)}::  ${v}`);
     });
     await message.channel.send(`= Current Guild Settings =\n${array.join("\n")}`, {code: "asciidoc"});
   }

@@ -6,13 +6,13 @@ const BLACKLISTED_ROLES = [
   "tnydotatoes"
 ];
 
-/* 
-** Migration for existing roles **
-.eval client.rolesData.set('143146071814569986', [
-  "tarkov",
-  "tnydotatoes",
-  "theboiis"]);
-*/
+// 
+// * Migration for existing roles **
+// .eval client.rolesData.set('143146071814569986', [
+// "tarkov",
+// "tnydotatoes",
+// "theboiis"]);
+// 
 
 exports.run = async (client, message, args, level) => {
   client.rolesData = new Enmap({name: "rolesData"});
@@ -22,89 +22,90 @@ exports.run = async (client, message, args, level) => {
   const author = message.author;
   const server = client.guilds.cache.get(message.guild.id);
 
-  if(!subcommand) {
+  if (!subcommand) {
     return sendHelp(channel);
   }
 
-  switch(subcommand) {
+  switch (subcommand) {
     case "join": {
       const role = args[1];
-      var allowedRoles = getAllowedRoles(client, message.guild.id);
-      if(!role || !allowedRoles.includes(role)) {
+      let allowedRoles = getAllowedRoles(client, message.guild.id);
+      if (!role || !allowedRoles.includes(role)) {
         // invalid rank, send allowed ranks
         return sendInvalidRole(client, channel);
-      } else {
-        const memberRole = server.roles.cache.find(role => role.name === args[1]); 
-        //TODO: Add check that this role does not have any abuse-able permissions
-        if(memberRole) {
+      }
+        const memberRole = server.roles.cache.find(roleToFind => roleToFind.name === args[1]);
+        // TODO: Add check that this role does not have any abuse-able permissions
+        if (memberRole) {
           message.member.roles.add(memberRole);
           channel.send(`${author.username} has been added to role: ${role}`);
         } else {
           console.log("No role found");
         }
-      }
+      
       break;
     }
     case "leave": {
       const role = args[1];
-      var allowedRoles = getAllowedRoles(client, message.guild.id);
-      if(!role || !allowedRoles.includes(role)) {
+      let allowedRoles = getAllowedRoles(client, message.guild.id);
+      if (!role || !allowedRoles.includes(role)) {
         // invalid rank, send allowed ranks
         return sendInvalidRole(client, channel);
-      } else {
-        const memberRole = server.roles.cache.find(role => role.name === args[1]); 
-        if(memberRole) {
+      }
+        const memberRole = server.roles.cache.find(roleToFind => roleToFind.name === args[1]);
+        if (memberRole) {
           message.member.roles.remove(memberRole);
           channel.send(`${author.username} has been removed from role: ${role}`);
         } else {
           console.log("No role found");
         }
-      }
+      
       break;
     }
     case "create": {
-      //TODO: Replace this with an actual permission check 
+      // TODO: Replace this with an actual permission check 
       // since roles may not be consistent across guilds
-      doesUserHaveAccess = message.member.roles.cache.some(role => role.name === 'Moderator' || role.name === 'Admin');
-      if(!doesUserHaveAccess) {
+      let doesUserHaveAccess = message.member.roles.cache.some(roleToFind => roleToFind.name === 'Moderator' || roleToFind.name === 'Admin');
+      if (!doesUserHaveAccess) {
         channel.send("Sorry, you must be Moderator or higher to create a role.");
         break;
       }
-      var allowedRoles = getAllowedRoles(client, message.guild.id);
+      let allowedRoles = getAllowedRoles(client, message.guild.id);
       // discord has max of 250 roles per guild, leaving buffer
-      if(allowedRoles.length > 100) {
+      if (allowedRoles.length > 100) {
         channel.send("Yikes, we have too many roles right now.");
         break;
       }
       const role = args[1];
-      const memberRole = server.roles.cache.find(role => role.name === args[1]); 
+      const memberRole = server.roles.cache.find(roleToFind => roleToFind.name === args[1]);
       if (memberRole || BLACKLISTED_ROLES.includes(role)) {
         channel.send("Invalid role name, please choose a different name");
       } else {
-        //TODO: This currently adds the lowest permission set possible, but can we add even less?
-        roleData = {
+        // TODO: This currently adds the lowest permission set possible, but can we add even less?
+        let roleData = {
           name: args[1],
           hoist: false,
           mentionable: true
         }
         registerNewRole(client, message.guild.id, args[1]);
         // TODO: Does this note do anything?
-        server.roles.create({ data: roleData, reason: 'dynamic role' });
+        server.roles.create({ data: roleData,
+reason: 'dynamic role' });
         channel.send("Role created.");
       }
       break;
     }
     case "remove": {
-      //TODO: Replace this with an actual permission check 
+      // TODO: Replace this with an actual permission check 
       // since roles may not be consistent across guilds
-      doesUserHaveAccess = message.member.roles.cache.some(role => role.name === 'Moderator' || role.name === 'Admin');
-      if(!doesUserHaveAccess) {
+      let doesUserHaveAccess = message.member.roles.cache.some(roleToFind => roleToFind.name === 'Moderator' || roleToFind.name === 'Admin');
+      if (!doesUserHaveAccess) {
         channel.send("Sorry, you must be Moderator or higher to create a role.");
         break;
       }
-      var allowedRoles = getAllowedRoles(client, message.guild.id);
+      let allowedRoles = getAllowedRoles(client, message.guild.id);
       const role = args[1];
-      const memberRole = server.roles.cache.find(role => role.name === args[1]); 
+      const memberRole = server.roles.cache.find(roleToFind => roleToFind.name === args[1]);
       if (!memberRole || !allowedRoles.includes(role) || BLACKLISTED_ROLES.includes(role)) {
         channel.send("Invalid role name, please choose a different name");
       } else {
@@ -115,9 +116,8 @@ exports.run = async (client, message, args, level) => {
       break;
     }
     case "list": {
-      allowedRoles = getAllowedRoles(client, channel.guild.id);
-      return channel.send("Available roles:\n" + " • " + allowedRoles.join("\n • "), {code: "asciidoc"});
-      break;
+      let allowedRoles = getAllowedRoles(client, channel.guild.id);
+      return channel.send(`${"Available roles:\n • "}${allowedRoles.join("\n • ")}`, {code: "asciidoc"});
     }
     default:
       return sendHelp(channel);
@@ -125,18 +125,20 @@ exports.run = async (client, message, args, level) => {
 };
 
 function sendHelp(channel) {
-  return channel.send(`= USAGE =
+  return channel.send(
+`= USAGE =
 .roles create [role]   :: Create a new role (Mod only)
 .roles remove [role]   :: Remove a role (Mod only)
 .roles join [role]     :: Join a role
 .roles leave [role]    :: Leave a role
 .roles list            :: Displays all available roles`,
-  {code: "asciidoc"});
+  {code: "asciidoc"}
+);
 }
 
 function sendInvalidRole(client, channel) {
-  allowedRoles = getAllowedRoles(client, channel.guild.id);
-  return channel.send("Invalid role, available role:\n" + " • " + allowedRoles.join("\n • "), {code: "asciidoc"});
+  let allowedRoles = getAllowedRoles(client, channel.guild.id);
+  return channel.send(`${"Invalid role, available role:\n • "}${allowedRoles.join("\n • ")}`, {code: "asciidoc"});
 }
 
 function getAllowedRoles(client, guildId) {
@@ -145,7 +147,7 @@ function getAllowedRoles(client, guildId) {
 }
 
 function registerNewRole(client, guildId, newRoleName) {
-  //TODO: Add sorting
+  // TODO: Add sorting
   const roleData = client.rolesData.ensure(guildId, []);
   roleData.push(newRoleName);
   client.rolesData.set(guildId, roleData);
@@ -154,7 +156,7 @@ function registerNewRole(client, guildId, newRoleName) {
 function deregisterRole(client, guildId, roleName) {
   const roleData = client.rolesData.ensure(guildId, []);
   const index = roleData.indexOf(roleName);
-  if(index >= 0) {
+  if (index >= 0) {
     roleData.splice(index, 1);
     client.rolesData.set(guildId, roleData);
   }

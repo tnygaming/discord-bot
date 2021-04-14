@@ -1,12 +1,12 @@
 const { inspect } = require("util");
 
-/*
-FOR GUILD SETTINGS SEE set.js !
-This command is used to modify the bot's default configuration values, which affects all guilds. 
-If a default setting is not specifically overwritten by a guild, changing a default here will
-change it for that guild. The `add` action adds a key to the configuration of every guild in
-your bot. The `del` action removes the key also from every guild, and loses its value forever.
-*/
+// 
+// FOR GUILD SETTINGS SEE set.js !
+// This command is used to modify the bot's default configuration values, which affects all guilds. 
+// If a default setting is not specifically overwritten by a guild, changing a default here will
+// change it for that guild. The `add` action adds a key to the configuration of every guild in
+// your bot. The `del` action removes the key also from every guild, and loses its value forever.
+// 
 
 exports.run = async (client, message, [action, key, ...value], level) => { // eslint-disable-line no-unused-vars
 
@@ -65,7 +65,7 @@ exports.run = async (client, message, [action, key, ...value], level) => { // es
       message.reply(`${key} was successfully deleted.`);
     } else
     // If they respond with n or no, we inform them that the action has been cancelled.
-    if (["n","no","cancel"].includes(response)) {
+    if (["n", "no", "cancel"].includes(response)) {
       message.reply("Action cancelled.");
     }
   } else

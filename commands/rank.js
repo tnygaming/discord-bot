@@ -30,25 +30,25 @@ exports.run = async (client, message, args, level) => {
 
   const subcommand = args[0];
 
-  if(!subcommand) {
+  if (!subcommand) {
     return sendHelp(channel);
   }
 
-  switch(subcommand) {
-    case "set":
+  switch (subcommand) {
+    case "set": {
       const rank = args[1];
 
-      if(!rank || !ALLOWED_RANKS.includes(rank)) {
+      if (!rank || !ALLOWED_RANKS.includes(rank)) {
         // invalid rank, send allowed ranks
         return sendRanks(channel);
-      } else {
+      }
         const key = message.author.id;
         // retrieve data for user
         const oldRank = client.ranks.get(key);
         // save rank
         client.ranks.set(key, {
           userId: key,
-          rank: rank
+          rank
         });
 
         if (oldRank) {
@@ -56,13 +56,15 @@ exports.run = async (client, message, args, level) => {
         } else {
           channel.send(`${message.author.username}'s rank was set to ${rank}`);
         }
-      }
+      
 
       break;
-    case "reset":
+    }
+    case "reset": {
       reset(client, message, channel, args[1])
       break;
-    case "get":
+    }
+    case "get": {
       const discordUser = client.parseDiscordUser(args[1]);
       if (discordUser == undefined) {
         // missing/wrong argument, send help
@@ -72,14 +74,15 @@ exports.run = async (client, message, args, level) => {
        // retrieve data for user
       const result = client.ranks.get(discordUser.id);
 
-      if(result) {
+      if (result) {
         channel.send(`${discordUser.username}'s rank is: ${result.rank}`);
       } else {
         channel.send("User not found");
       }
 
       break;
-    case "leaderboard":
+    }
+    case "leaderboard": {
       // retrieve all data
       const ranks = client.ranks.array();
 
@@ -89,20 +92,20 @@ exports.run = async (client, message, args, level) => {
       const tableBoi = new TableBoi(["User", "Rank"]);
 
       // add data rows
-      for(const data of sortedRanks) {
+      for (const data of sortedRanks) {
         tableBoi.addRow([client.getDiscordUsername(data.userId), data.rank]);
       }
 
-      return message.channel.send(`\`\`\`
-${tableBoi.getTableString()}
-\`\`\``);
+      message.channel.send(`\`\`\`\n${tableBoi.getTableString()}\n\`\`\``)
+      break
+    }
     default:
       return sendHelp(channel);
   }
 };
 
 function reset(client, message, channel, userId) {
-  if(client.permlevel(message) < 3) {
+  if (client.permlevel(message) < 3) {
     return channel.send(`You must be Admin or higher to use this command`);
   }
 
@@ -115,20 +118,22 @@ function reset(client, message, channel, userId) {
   client.ranks.delete(discordUser.id)
 
   const result = client.ranks.get(discordUser.id);
-  channel.send(`${discordUser.username}'s rank has been reset`);
+  channel.send(`${discordUser.username}'s rank has been reset to ${result}`);
 }
 
 function sendHelp(channel) {
-  return channel.send(`= USAGE =
+  return channel.send(
+`= USAGE =
 .rank set [rank]    :: Sets current user's rank
 .rank get [@user]   :: Returns target user's rank
 .rank reset [@user] :: Resets target user's rank (Admin only)
 .rank leaderboard   :: Displays all users and their ranks`,
-  {code: "asciidoc"});
+  {code: "asciidoc"}
+);
 }
 
 function sendRanks(channel) {
-  return channel.send("Invalid rank, available ranks:\n" + " • " + ALLOWED_RANKS.join("\n • "), {code: "asciidoc"});
+  return channel.send(`${"Invalid rank, available ranks:\n • "}${ALLOWED_RANKS.join("\n • ")}`, {code: "asciidoc"});
 }
 
 function getRankIndex(rank) {

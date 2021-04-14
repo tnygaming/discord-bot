@@ -7,56 +7,56 @@ const numEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️�
  * Quick and Dirty poller. 
  */
 class Poll {
-	constructor(msg, question, answers, useNumberEmojis) {
-		if (msg) {
-			this.guildId = msg.guild.id;
-			this.channelId = msg.channel.id;
-			this.msgId = null;
-			this.question = question;
-			this.answers = answers;
-			this.createdOn = Date.now();
-			this.results = [];
+    constructor(msg, question, answers, useNumberEmojis) {
+        if (msg) {
+            this.guildId = msg.guild.id;
+            this.channelId = msg.channel.id;
+            this.msgId = null;
+            this.question = question;
+            this.answers = answers;
+            this.createdOn = Date.now();
+            this.results = [];
       this.id = this._generateId();
       this.useNumberEmojis = useNumberEmojis;
-		}
-	}
+        }
+    }
 
   /**
    * Copy constructor
    */
-	static copy (other) {
-		let p = new Poll();
+    static copy(other) {
+        let p = new Poll();
 
-		p.guildId = other.guildId;
-		p.channelId = other.channelId;
-		p.msgId = other.msgId;
-		p.question = other.question;
-		p.answers = other.answers;
-		p.createdOn = other.createdOn;
-		p.results = other.results;
+        p.guildId = other.guildId;
+        p.channelId = other.channelId;
+        p.msgId = other.msgId;
+        p.question = other.question;
+        p.answers = other.answers;
+        p.createdOn = other.createdOn;
+        p.results = other.results;
     p.id = other.id;
     p.useNumberEmojis = other.useNumberEmojis;
 
-		return p;
-	}
+        return p;
+    }
 
 
   /**
    * Writes a Poll to the input channel
    * @param {Discord.Channel} the channel to send the poll to
    */
-	async start(channel) {
+    async start(channel) {
     const emojis = this._getEmojis(channel.guild.emojis);
-		const message = await channel.send({ embed: this._generateEmbed(emojis) });
+        const message = await channel.send({ embed: this._generateEmbed(emojis) });
     this.msgId = message.id;
-		for (let i = 0; i < this.answers.length && i < 10; ++i) {
-			try {
-				await message.react(emojis[i]);
-			} catch (error) {
-				console.log(error);
-			}
-		}
-		return message.id;
+        for (let i = 0; i < this.answers.length && i < 10; ++i) {
+            try {
+                await message.react(emojis[i]);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        return message.id;
   }
   
   _getEmojis(emojiMgr) {
@@ -65,36 +65,36 @@ class Poll {
     }
     return emojiMgr.cache.array()
       .filter(emoji => emoji.animated == false && emoji.available)
-      .sort(() => .5 - Math.random());
+      .sort(() => 0.5 - Math.random());
   }
 
-	_generateEmbed(emojis) {
-		let str = new String();
+    _generateEmbed(emojis) {
+        let str = ''
 
     for (let i = 0; i < this.answers.length && i < 10; i++) {
       str += `${emojis[i]}. ${this.answers[i]}\n`;
     }
 
-		let embed = new Discord.MessageEmbed()
-			.setColor("#0099FF")
-			.setAuthor("📊" + this.question)
-			.setDescription(str);
+        let embed = new Discord.MessageEmbed()
+            .setColor("#0099FF")
+            .setAuthor(`📊${this.question}`)
+            .setDescription(str);
 
-		return embed;
-	}
+        return embed;
+    }
 
-	_generateId() {
+    static _generateId() {
     return uuid.v4();
-	}
+    }
 
 
-	async getPollMessage(discordClient) {
-		try {
-			return await discordClient.guilds.get(this.guildId).channels.get(this.channelId).fetchMessage(this.msgId);
-		} catch (err) {
-			return;
-		}
-	}
+    async getPollMessage(discordClient) {
+        try {
+            return await discordClient.guilds.get(this.guildId).channels.get(this.channelId).fetchMessage(this.msgId);
+        } catch (err) {
+            console.log(err)
+        }
+    }
 }
 
 module.exports = Poll;

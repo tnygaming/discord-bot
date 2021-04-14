@@ -10,15 +10,14 @@ const magic = /[^\s"]+|"([^"]*)"/gi;
  * @param {args from a discord.js command} args 
  */
 module.exports.parseArgs = function parseArgs(args) {
-  var result = [];
+  let result = [];
   
   do {
-      //Each call to exec returns the next regex match as an array
+      // Each call to exec returns the next regex match as an array
       var match = magic.exec(args.join(" "));
-      if (match != null)
-      {
-          //Index 1 in the array is the captured group if it exists
-          //Index 0 is the matched text, which we use if no captured group exists
+      if (match != null) {
+          // Index 1 in the array is the captured group if it exists
+          // Index 0 is the matched text, which we use if no captured group exists
           result.push(match[1] ? match[1] : match[0]);
       }
   } while (match != null);

@@ -16,7 +16,7 @@ class DiscordClientAwareScheduler {
       const startTime = Date.now()
       console.log(`begin executing ${schedulableFileName}`)
       props.run(this.client)
-        .then(result => console.log(`completed executing ${schedulableFileName} in ${Math.floor((Date.now() - startTime)/1000)} seconds`))
+        .then(result => console.log(`completed executing ${schedulableFileName} in ${Math.floor((Date.now() - startTime) / 1000)} seconds`))
         .catch(error => console.error(error))
     })
   }
