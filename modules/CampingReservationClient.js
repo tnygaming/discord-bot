@@ -1,12 +1,8 @@
 const bent = require('bent')
 const discord = require('discord.js')
-const Bottleneck = require('bottleneck')
 const TableBoi = require("./TableBoi");
 const reservationClient = bent('https://www.recreation.gov/api/camps/availability/campground/', 'json', 200)
 const MaxEmbedLength = 2048
-const limiter = new Bottleneck({
-  minTime: 1000 // 1 request per second max
-})
 
 // campgrounds to check, hardcoded for now, will make user-configurable if there is demand
 const campgrounds = {
@@ -15,43 +11,43 @@ const campgrounds = {
   232449: "North Pines"
 }
 
-/*
-Example api response:
-    "campsites":{
-          "100":{
-             "availabilities":{
-                "2020-10-01T00:00:00Z":"Reserved",
-                "2020-10-02T00:00:00Z":"Available",
-                ...
-             },
-             "site":"044"
-          },
-          ...
-      }
-*/
+// 
+// Example api response:
+//     "campsites":{
+//           "100":{
+//              "availabilities":{
+//                 "2020-10-01T00:00:00Z":"Reserved",
+//                 "2020-10-02T00:00:00Z":"Available",
+//                 ...
+//              },
+//              "site":"044"
+//           },
+//           ...
+//       }
+// 
 
-/* returns map of of available days for each campsite
-    campId => siteId => available days
-    ex:
-    {
-      232447: {
-        "044": [11, 12, 13],
-        "045": [13]
-      },
-      232450: {
-        "001": [1]
-      }
-    }
-*/
+// returns map of of available days for each campsite
+//  campId => siteId => available days
+//  ex:
+//  {
+//    232447: {
+//      "044": [11, 12, 13],
+//      "045": [13]
+//    },
+//    232450: {
+//      "001": [1]
+//    }
+//  }
+// 
 async function getReservations(month) {
   const year = new Date().getYear() + 1900  // 0-th year is 1990, thanks javascript
-  month = month.toString().padStart(2, '0') // Pad with 0 if needed, API uses two-char months
+  let paddedmonth = month.toString().padStart(2, '0') // Pad with 0 if needed, API uses two-char months
 
-  var results = new Map();
+  let results = new Map();
 
   // check each campsite and calculate availabilities
-  await Promise.all(Object.keys(campgrounds).map(async (campId) => {
-    var response = await reservationClient(`${campId}/month?start_date=${year}-${month}-01T00%3A00%3A00.000Z`);
+  await Promise.all(Object.keys(campgrounds).map(async campId => {
+    let response = await reservationClient(`${campId}/month?start_date=${year}-${paddedmonth}-01T00%3A00%3A00.000Z`);
     results.set(campId, _checkCampsites(response.campsites))
   }));
 
@@ -59,18 +55,18 @@ async function getReservations(month) {
 }
 
 function getEmbed(reservations, month) {
-  var tableStr = ""
+  let tableStr = ""
 
   // generate table for each campsite
   for (const [campId, availableSites] of reservations.entries()) {
-    if(availableSites.size) {
+    if (availableSites.size) {
       const rows = [...availableSites].map(([site, dates]) => [site, dates.toString()])
       const campName = `[${campgrounds[campId]}](https://www.recreation.gov/camping/campgrounds/${campId}/availability)`
       tableStr += `${campName}\`\`\`${TableBoi.getTableString(["Site", "Dates"], rows)}\`\`\` \n`
     }
   }
 
-  if(tableStr.length > MaxEmbedLength) {
+  if (tableStr.length > MaxEmbedLength) {
     tableStr = tableStr.substring(0, MaxEmbedLength)
   }
 
@@ -81,11 +77,11 @@ function getEmbed(reservations, month) {
 }
 
 function _checkCampsites(campsites) {
-  var campsiteMap = new Map()
+  let campsiteMap = new Map()
 
-  Object.entries(campsites).forEach(([id, campsite]) => {
+  Object.entries(campsites).forEach(([, campsite]) => {
     const dates = _getAvailabeDates(campsite)
-    if(dates.length) {
+    if (dates.length) {
       campsiteMap.set(campsite.site, dates)
     }
   });
@@ -95,8 +91,8 @@ function _checkCampsites(campsites) {
 
 function _getAvailabeDates(campsite) {
   return Object.entries(campsite.availabilities)
-    .filter(([date, status]) => status === "Available")
-    .map(([date, status]) => new Date(date).getUTCDate())
+    .filter(([, status]) => status === "Available")
+    .map(([date]) => new Date(date).getUTCDate())
 }
 
 module.exports.getReservations = getReservations

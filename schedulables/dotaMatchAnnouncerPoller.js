@@ -1,8 +1,7 @@
 const enmap = require('enmap')
 const discord = require('discord.js')
 const dotaClient = require('../modules/OpenDotaClient')
-var _ = require('underscore')
-const { conf } = require('../commands/dota')
+const _ = require('underscore')
 const timeFormatters = require('../modules/TimeFormatters')
 
 const dotaConf = new enmap({name: 'dotaConf'})
@@ -14,7 +13,7 @@ const dotaConf = new enmap({name: 'dotaConf'})
  * If a match that has already been announced is offered, it will be ignored.
  */
 class RecentDotaMatchAnnouncer {
-  constructor () {
+  constructor() {
     this.candidateMatches = new Map()
     this.recentlyAnnouncedMatches = new Map()
   }
@@ -33,26 +32,26 @@ class RecentDotaMatchAnnouncer {
     }
   }
 
-  //for each channel, for each match, find all the discord users in the channel who played in it and announce the match in the channel.
+  // for each channel, for each match, find all the discord users in the channel who played in it and announce the match in the channel.
   announce(client) {
     if (!this.candidateMatches.size) {
       return
     }
     const confs = this._getFlattenedDotaConfs()
     
-    const confsByChannel = _.groupBy(confs, (conf) => conf.channelId)
+    const confsByChannel = _.groupBy(confs, config => config.channelId)
   
-    for (let [channelId, confs] of Object.entries(confsByChannel)) {
-      for (let [matchId, match] of this.candidateMatches) {
+    for (let [channelId, configs] of Object.entries(confsByChannel)) {
+      for (let [, match] of this.candidateMatches) {
         const importantPlayers = match.players
         .map(player => {
-          const matchingConf = confs.find(conf => conf.dotaId == player.account_id)
+          const matchingConf = configs.find(config => config.dotaId == player.account_id)
           if (!matchingConf) {
              return null
           }
           return {
             dotaId: player.account_id,
-            dotaName: player.personaname, 
+            dotaName: player.personaname,
             discordId: matchingConf.discordId,
             discordName: client.getDiscordUsername(matchingConf.discordId),
             team: player.isRadiant ? 'Radiant' : 'Dire'
@@ -62,10 +61,10 @@ class RecentDotaMatchAnnouncer {
         if (importantPlayers.length) {
           this._announceMatch(client, channelId, importantPlayers, match)
         }
-      }      
+      }
     }
-    //fucking js map iterator decided to be in reverse.
-    this.candidateMatches.forEach((v,k)=>this.recentlyAnnouncedMatches.set(k,v))
+    // fucking js map iterator decided to be in reverse.
+    this.candidateMatches.forEach((v, k) => this.recentlyAnnouncedMatches.set(k, v))
     this.candidateMatches.clear()
   }
 
@@ -74,14 +73,13 @@ class RecentDotaMatchAnnouncer {
     
     let radiantPlayers = []
     let direPlayers = []
-    for(const player of match.players) {
+    for (const player of match.players) {
       let importantPlayer = importantPlayers.find(p => player.account_id != undefined && p.dotaId == player.account_id)
       
-      let playerName = `${player.personaname} ${importantPlayer == null ? '' : '(' + importantPlayer.discordName + ')'}` 
+      let playerName = `${player.personaname} ${importantPlayer == null ? '' : `(${importantPlayer.discordName})`}`
       if (player.isRadiant) {
         radiantPlayers.push(playerName)
-      }
-      else {
+      } else {
         direPlayers.push(playerName)
       }
     }
@@ -110,10 +108,10 @@ More info at [opendota](https://www.opendota.com/matches/${match.match_id}) [dot
     .flatMap(entry => {
       let result = []
       for (const dotaId of entry.dotaIds) {
-        if (dotaId != undefined) {
+        if (dotaId !== undefined) {
           result.push({
-            dotaId: dotaId,
-            discordId: entry.discordId, 
+            dotaId,
+            discordId: entry.discordId,
             channelId: entry.channelId
           })
         }
@@ -121,11 +119,11 @@ More info at [opendota](https://www.opendota.com/matches/${match.match_id}) [dot
       return result
     })
   }
-} 
+}
 
 
-MatchAnnouncer = new RecentDotaMatchAnnouncer()
-module.exports.run = async (client) => {
+let MatchAnnouncer = new RecentDotaMatchAnnouncer()
+module.exports.run = async client => {
   const dotaIds = dotaConf
   .filter(entry => !!entry)
   .map(entry =>  entry.dotaIds)

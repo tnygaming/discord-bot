@@ -2,40 +2,41 @@
 const finnhub = require('finnhub');
 const config = require("../config.js");
 
-const api_key = finnhub.ApiClient.instance.authentications['api_key'];
-api_key.apiKey = config.finnhub_api_key; 
+const api_key = finnhub.ApiClient.instance.authentications.api_key;
+api_key.apiKey = config.finnhub_api_key;
 const finnhubClient = new finnhub.DefaultApi();
-const numLocaleOpts = {minimumFractionDigits: 2, maximumFractionDigits: 2};
+const numLocaleOpts = {minimumFractionDigits: 2,
+maximumFractionDigits: 2};
 
 
 exports.run = async (client, message, args, level) => {
   const start = Date.now();
 
-  if(args[0]) {
+  if (args[0]) {
     const company = args[0].toUpperCase();
     finnhubClient.quote(company, (error, data, response) => {
       console.log(`Fetch took ${Date.now() - start}ms`);
       console.log(company);
       console.log(data);
-      if(!!!data) {
+      if (!data) {
         message.reply(`Things don't appear to be working at the moment, give me a sec.`);
         return;
       }
-      if(Object.keys(data).length === 0) {
+      if (Object.keys(data).length === 0) {
         message.reply(`Invalid ticker [${company}]`);
       } else {
         const priceDiff = Math.abs(data.c - data.pc);
-        const percentDiff = (priceDiff / data.pc) * 100;
+        const percentDiff = priceDiff / data.pc * 100;
 
         const formattedPriceDiff = priceDiff.toLocaleString('en-US', numLocaleOpts);
         const formattedPercentDiff = percentDiff.toLocaleString('en-US', numLocaleOpts);
 
-        let arrowDirection = '\u25B2'; //up
+        let arrowDirection = '\u25B2'; // up
         let changePrefix = '\+';
-        if(data.c < data.pc) {
-          arrowDirection = '\u25BC'; //down 
+        if (data.c < data.pc) {
+          arrowDirection = '\u25BC'; // down 
           changePrefix = '\-';
-        } 
+        }
 
         // important to have price prefix match with diff markdown colors
         // + in the beginning of the line for green
