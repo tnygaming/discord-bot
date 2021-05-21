@@ -107,8 +107,8 @@ async function deregisterLink(client, channel, discordUser, dotaId) {
     discordId: discordUser.id,
     channelId: channel.id
   })
-  if (dotaConf.dotaIds.includes(dotaId)) {
-    client.dotaConf.remove(dotaConfKey, dotaId, 'dotaIds')
+  if (dotaConf.has(dotaConfKey)) {
+    client.dotaConf.delete(dotaConfKey)
     channel.send(`${discordUser.username} was unlinked from account ${dotaId}`)
   } else {
     channel.send(`${discordUser.username} is not linked to ${dotaId}`)
