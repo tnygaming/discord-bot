@@ -117,7 +117,7 @@ reason: 'dynamic role' });
     }
     case "list": {
       let allowedRoles = getAllowedRoles(client, channel.guild.id);
-      return channel.send(`${"Available roles:\n • "}${allowedRoles.join("\n • ")}`, {code: "asciidoc"});
+      return channel.send(`${"Available roles:\n • "}${allowedRoles.sort().join("\n • ")}`, {code: "asciidoc"});
     }
     default:
       return sendHelp(channel);
