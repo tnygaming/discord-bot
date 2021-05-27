@@ -117,7 +117,7 @@ reason: 'dynamic role' });
     }
     case "list": {
       let allowedRoles = getAllowedRoles(client, channel.guild.id);
-      return channel.send(`${"Available roles:\n • "}${allowedRoles.sort().join("\n • ")}`, {code: "asciidoc"});
+      return channel.send(`${"Available roles:\n • "}${allowedRoles.join("\n • ")}`, {code: "asciidoc"});
     }
     default:
       return sendHelp(channel);
@@ -151,6 +151,7 @@ function registerNewRole(client, guildId, newRoleName) {
   const roleData = client.rolesData.ensure(guildId, []);
   roleData.push(newRoleName);
   client.rolesData.set(guildId, roleData);
+  client.rolesData = client.rolesData.sort();
 }
 
 function deregisterRole(client, guildId, roleName) {
