@@ -32,7 +32,7 @@ jobs:
           command: ssh-keyscan -p$jumpport $jumphost >> ~/.ssh/known_hosts
       - run:
           name: Add Host Key
-          command: ssh-keyscan $tnyhost >> ~/.ssh/known_hosts
+          command: cat $tnyhostkey >> ~/.ssh/known_hosts
       - run:
           name: Push to Remote Host
           command: ssh -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost ls
