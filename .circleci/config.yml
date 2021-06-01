@@ -31,11 +31,8 @@ jobs:
           name: Add Host Key
           command: ssh-keyscan -p$jumpport $jumphost >> ~/.ssh/known_hosts
       - run:
-          name: Add Host Key
-          command: echo $tnyhostkey >> ~/.ssh/known_hosts
-      - run:
           name: Push to Remote Host
-          command: ssh -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost ls
+          command: ssh -o StrictHostKeyChecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost ls
 
 workflows:
   orb-free-workflow:
