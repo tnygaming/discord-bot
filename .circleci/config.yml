@@ -16,7 +16,7 @@ jobs:
             - node-deps-v1-{{ .Branch }}-{{checksum "package-lock.json"}}
       - run:
           name: install build-essential
-          command: apt update && apt install build-essential
+          command: apt update && apt install build-essential rsync
       - run:
           name: install packages
           command: npm ci
@@ -32,7 +32,7 @@ jobs:
           command: ssh-keyscan -p$jumpport $jumphost >> ~/.ssh/known_hosts
       - run:
           name: Push to Remote Host
-          command: ssh -o StrictHostKeyChecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost ls
+          command: rsync -v -e 'ssh -A -t $jumpuser@$jumphost -p $jumpport ssh -A -t $tnyuser@$tnyhost' /root/project/node_modules :~/node_test
 
 workflows:
   orb-free-workflow:
