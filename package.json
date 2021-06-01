@@ -37,7 +37,7 @@
     "moment": "^2.29.1",
     "moment-duration-format": "^2.3.2",
     "node-schedule": "^2.0.0",
-    "underscore": "^1.12.1",
+    "underscore": "^1.13.0",
     "uuid": "^8.3.2",
     "zlib-sync": "^0.1.7"
   },
