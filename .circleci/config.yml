@@ -12,6 +12,9 @@ jobs:
           keys:
             - node-deps-v1-{{ .Branch }}-{{checksum "package-lock.json"}}
       - run:
+          name: install build-essential
+          command: apt install build-essential
+      - run:
           name: install packages
           command: npm ci
       - save_cache:
