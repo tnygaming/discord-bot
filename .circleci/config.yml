@@ -26,7 +26,7 @@ jobs:
           command: npm run test
       - run:
           name: Add Host Key
-          command: ssh-keyscan -p$jumpport $jumphost >> ~/.ssh/known_hosts
+          command: ssh-keyscan -p$jumpport $jumpip >> ~/.ssh/known_hosts
       - run:
           name: Push to Remote Host
           command: ssh $jumpuser@$jumphost -p $jumpport ls
