@@ -13,7 +13,7 @@ jobs:
             - node-deps-v1-{{ .Branch }}-{{checksum "package-lock.json"}}
       - run:
           name: install build-essential
-          command: apt install build-essential
+          command: apt update && apt install build-essential
       - run:
           name: install packages
           command: npm ci
