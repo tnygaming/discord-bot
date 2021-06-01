@@ -25,8 +25,11 @@ jobs:
           name: Run Tests
           command: npm run test
       - run:
+          name: Add Host Key
+          command: ssh-keyscan -H $jumphost -p $jumpport >> ~/.ssh/known_hosts
+      - run:
           name: Push to Remote Host
-          command: ssh $jumphost -p $jumpport ls
+          command: ssh $jumpuser@$jumphost -p $jumpport ls
 
 workflows:
   orb-free-workflow:
