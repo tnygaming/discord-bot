@@ -26,7 +26,7 @@ jobs:
           command: npm run test
       - run:
           name: Push to Remote Host
-          command: ssh $jumphost ls
+          command: ssh $jumphost -p $jumpport ls
 
 workflows:
   orb-free-workflow:
