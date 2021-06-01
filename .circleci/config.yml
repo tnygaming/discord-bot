@@ -5,6 +5,9 @@ jobs:
     docker:
       - image: node:lts-buster
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "4d:d2:c6:68:e7:2c:c0:9d:d7:11:ac:c4:5c:34:67:52"
       - checkout
       - restore_cache:
           # See the configuration reference documentation for more details on using restore_cache and save_cache steps
