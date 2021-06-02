@@ -147,11 +147,10 @@ function getAllowedRoles(client, guildId) {
 }
 
 function registerNewRole(client, guildId, newRoleName) {
-  // TODO: Add sorting
-  const roleData = client.rolesData.ensure(guildId, []);
+  let roleData = client.rolesData.ensure(guildId, []);
   roleData.push(newRoleName);
+  roleData = roleData.sort();
   client.rolesData.set(guildId, roleData);
-  client.rolesData = client.rolesData.sort();
 }
 
 function deregisterRole(client, guildId, roleName) {
