@@ -31,8 +31,14 @@ jobs:
           name: Add Host Key
           command: ssh-keyscan -p$jumpport $jumphost >> ~/.ssh/known_hosts
       - run:
+          name: Update Bot
+          command: ssh -o StrictHostKeychecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost "cd /opt/discord-bot; git pull"
+      - run:
           name: Push to Remote Host
           command: rsync -v -a -e "ssh -A -t $jumpuser@$jumphost -p $jumpport ssh -A -t $tnyuser@$tnyhost" /root/project/node_modules :/opt/discord-bot
+      - run:
+          name: Restart Bot
+          command: ssh -o StrictHostKeychecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost "cd /opt/discord-bot; pm2 startOrRestart index.js --name=alfred"
 
 workflows:
   orb-free-workflow:
