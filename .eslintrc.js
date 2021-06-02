@@ -54,12 +54,15 @@ module.exports = {
             "error",
             "last"
         ],
-        "complexity": "error",
+        "complexity": [
+            "error", 
+            { "max": 50 }
+        ],
         "computed-property-spacing": [
             "error",
             "never"
         ],
-        "consistent-return": "error",
+        "consistent-return": "off",
         "consistent-this": "error",
         "curly": "off",
         "default-case": "error",
@@ -210,6 +213,12 @@ module.exports = {
         "no-unreachable-loop": "error",
         "no-unsafe-optional-chaining": "error",
         "no-unused-expressions": "error",
+        "no-unused-vars": [
+            "error", 
+            { 
+                "argsIgnorePattern": "^_" 
+            }
+        ],
         "no-use-before-define": "warn",
         "no-useless-backreference": "error",
         "no-useless-call": "error",
@@ -249,7 +258,7 @@ module.exports = {
         "quotes": "off",
         "radix": "error",
         "require-atomic-updates": "error",
-        "require-await": "warn",
+        "require-await": "off",
         "require-unicode-regexp": "off",
         "rest-spread-spacing": "error",
         "semi": "off",
