@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  test:
+  deploy:
     docker:
       - image: node:lts-buster
     steps:
@@ -41,6 +41,9 @@ jobs:
           command: ssh -o StrictHostKeychecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost "npx pm2 restart alfred"
 
 workflows:
-  orb-free-workflow:
+  deployment:
     jobs:
-      - test
+      - deploy:
+          filters:
+            branches:
+              only: master
