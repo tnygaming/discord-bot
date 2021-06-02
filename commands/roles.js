@@ -6,6 +6,44 @@ const BLACKLISTED_ROLES = [
   "tnydotatoes"
 ];
 
+function sendHelp(channel) {
+  return channel.send(
+`= USAGE =
+.roles create [role]   :: Create a new role (Mod only)
+.roles remove [role]   :: Remove a role (Mod only)
+.roles join [role]     :: Join a role
+.roles leave [role]    :: Leave a role
+.roles list            :: Displays all available roles`,
+  {code: "asciidoc"}
+);
+}
+
+function getAllowedRoles(client, guildId) {
+  const roleData = client.rolesData.ensure(guildId, []);
+  return roleData;
+}
+
+function sendInvalidRole(client, channel) {
+  let allowedRoles = getAllowedRoles(client, channel.guild.id);
+  return channel.send(`${"Invalid role, available role:\n • "}${allowedRoles.join("\n • ")}`, {code: "asciidoc"});
+}
+
+function registerNewRole(client, guildId, newRoleName) {
+  let roleData = client.rolesData.ensure(guildId, []);
+  roleData.push(newRoleName);
+  roleData = roleData.sort();
+  client.rolesData.set(guildId, roleData);
+}
+
+function deregisterRole(client, guildId, roleName) {
+  const roleData = client.rolesData.ensure(guildId, []);
+  const index = roleData.indexOf(roleName);
+  if (index >= 0) {
+    roleData.splice(index, 1);
+    client.rolesData.set(guildId, roleData);
+  }
+}
+
 // 
 // * Migration for existing roles **
 // .eval client.rolesData.set('143146071814569986', [
@@ -14,7 +52,7 @@ const BLACKLISTED_ROLES = [
 // "theboiis"]);
 // 
 
-exports.run = async (client, message, args, level) => {
+exports.run = async (client, message, args, _level) => {
   client.rolesData = new Enmap({name: "rolesData"});
   const channel = message.channel;
 
@@ -123,45 +161,6 @@ reason: 'dynamic role' });
       return sendHelp(channel);
   }
 };
-
-function sendHelp(channel) {
-  return channel.send(
-`= USAGE =
-.roles create [role]   :: Create a new role (Mod only)
-.roles remove [role]   :: Remove a role (Mod only)
-.roles join [role]     :: Join a role
-.roles leave [role]    :: Leave a role
-.roles list            :: Displays all available roles`,
-  {code: "asciidoc"}
-);
-}
-
-function sendInvalidRole(client, channel) {
-  let allowedRoles = getAllowedRoles(client, channel.guild.id);
-  return channel.send(`${"Invalid role, available role:\n • "}${allowedRoles.join("\n • ")}`, {code: "asciidoc"});
-}
-
-function getAllowedRoles(client, guildId) {
-  const roleData = client.rolesData.ensure(guildId, []);
-  return roleData;
-}
-
-function registerNewRole(client, guildId, newRoleName) {
-  // TODO: Add sorting
-  const roleData = client.rolesData.ensure(guildId, []);
-  roleData.push(newRoleName);
-  client.rolesData.set(guildId, roleData);
-  client.rolesData = client.rolesData.sort();
-}
-
-function deregisterRole(client, guildId, roleName) {
-  const roleData = client.rolesData.ensure(guildId, []);
-  const index = roleData.indexOf(roleName);
-  if (index >= 0) {
-    roleData.splice(index, 1);
-    client.rolesData.set(guildId, roleData);
-  }
-}
 
 exports.conf = {
   enabled: true,
