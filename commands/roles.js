@@ -151,6 +151,7 @@ function registerNewRole(client, guildId, newRoleName) {
   const roleData = client.rolesData.ensure(guildId, []);
   roleData.push(newRoleName);
   client.rolesData.set(guildId, roleData);
+  client.rolesData = client.rolesData.sort();
 }
 
 function deregisterRole(client, guildId, roleName) {
