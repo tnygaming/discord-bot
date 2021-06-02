@@ -1,0 +1,49 @@
+version: 2.1
+
+jobs:
+  deploy:
+    docker:
+      - image: node:lts-buster
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "4d:d2:c6:68:e7:2c:c0:9d:d7:11:ac:c4:5c:34:67:52"
+      - checkout
+      - restore_cache:
+          # See the configuration reference documentation for more details on using restore_cache and save_cache steps
+          # https://circleci.com/docs/2.0/configuration-reference/?section=reference#save_cache
+          keys:
+            - node-deps-v1-{{ .Branch }}-{{checksum "package-lock.json"}}
+      - run:
+          name: install build-essential
+          command: apt update && apt install -y build-essential rsync
+      - run:
+          name: install packages
+          command: npm ci
+      - save_cache:
+          key: node-deps-v1-{{ .Branch }}-{{checksum "package-lock.json"}}
+          paths:
+            - ~/.npm
+      - run:
+          name: Run Tests
+          command: npm run test
+      - run:
+          name: Add Host Key
+          command: ssh-keyscan -p$jumpport $jumphost >> ~/.ssh/known_hosts
+      - run:
+          name: Update Bot
+          command: ssh -o StrictHostKeychecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost "cd /opt/discord-bot; git pull"
+      - run:
+          name: Push to Remote Host
+          command: rsync -v -a -e "ssh -A -t $jumpuser@$jumphost -p $jumpport ssh -A -t $tnyuser@$tnyhost" /root/project/node_modules :/opt/discord-bot
+      - run:
+          name: Restart Bot
+          command: ssh -o StrictHostKeychecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost "npx pm2 restart alfred"
+
+workflows:
+  deployment:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              only: master
