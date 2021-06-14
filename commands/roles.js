@@ -1,5 +1,9 @@
 const Enmap = require("enmap");
 
+//permissions maybe use flag const from lib later?
+const MANAGE_MESSAGES = 'MANAGE_MESSAGES';
+const ADMINISTRATOR = 'ADMINISTRATOR';
+
 const BLACKLISTED_ROLES = [
   "Admin",
   "Moderator",
@@ -16,6 +20,10 @@ function sendHelp(channel) {
 .roles list            :: Displays all available roles`,
   {code: "asciidoc"}
 );
+}
+
+function checkPermissions(message, isMod, isAdmin) {
+  return isMod && message.member.hasPermission(MANAGE_MESSAGES) || isAdmin && message.member.hasPermission(ADMINISTRATOR)
 }
 
 function getAllowedRoles(client, guildId) {
@@ -59,6 +67,7 @@ exports.run = async (client, message, args, _level) => {
   const subcommand = args[0];
   const author = message.author;
   const server = client.guilds.cache.get(message.guild.id);
+  const allowedRoles = getAllowedRoles(client, message.guild.id);
 
   if (!subcommand) {
     return sendHelp(channel);
@@ -67,7 +76,6 @@ exports.run = async (client, message, args, _level) => {
   switch (subcommand) {
     case "join": {
       const role = args[1];
-      let allowedRoles = getAllowedRoles(client, message.guild.id);
       if (!role || !allowedRoles.includes(role)) {
         // invalid rank, send allowed ranks
         return sendInvalidRole(client, channel);
@@ -85,7 +93,6 @@ exports.run = async (client, message, args, _level) => {
     }
     case "leave": {
       const role = args[1];
-      let allowedRoles = getAllowedRoles(client, message.guild.id);
       if (!role || !allowedRoles.includes(role)) {
         // invalid rank, send allowed ranks
         return sendInvalidRole(client, channel);
@@ -101,14 +108,10 @@ exports.run = async (client, message, args, _level) => {
       break;
     }
     case "create": {
-      // TODO: Replace this with an actual permission check 
-      // since roles may not be consistent across guilds
-      let doesUserHaveAccess = message.member.roles.cache.some(roleToFind => roleToFind.name === 'Moderator' || roleToFind.name === 'Admin');
-      if (!doesUserHaveAccess) {
+      if (!checkPermissions(message, true, true)) {
         channel.send("Sorry, you must be Moderator or higher to create a role.");
         break;
       }
-      let allowedRoles = getAllowedRoles(client, message.guild.id);
       // discord has max of 250 roles per guild, leaving buffer
       if (allowedRoles.length > 100) {
         channel.send("Yikes, we have too many roles right now.");
