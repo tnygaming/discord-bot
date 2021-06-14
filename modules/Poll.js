@@ -16,7 +16,7 @@ class Poll {
             this.answers = answers;
             this.createdOn = Date.now();
             this.results = [];
-      this.id = this._generateId();
+      this.id = uuid.v4();
       this.useNumberEmojis = useNumberEmojis;
         }
     }
@@ -82,11 +82,6 @@ class Poll {
 
         return embed;
     }
-
-    static _generateId() {
-    return uuid.v4();
-    }
-
 
     async getPollMessage(discordClient) {
         try {
