@@ -88,7 +88,6 @@ function updateRoleOwner(client, message, roleName) {
 exports.run = async (client, message, args, _level) => {
   client.rolesData = new Enmap({name: "rolesData"});
   const channel = message.channel;
-  console.log("DEBUG ME");
   const subcommand = args[0];
   const role = args[1];
   const author = message.author;
