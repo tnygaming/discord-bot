@@ -34,19 +34,6 @@ function validateRoleOwner(client, message, roleName) {
 
 function getAllowedRoles(client, guildId) {
   let roleData = client.rolesData.ensure(guildId, {});
-  // TEMP CONVERSION CODE START
-  // THIS IS A REAL HATE ENMAP MOMENT ENSURE DEFAULT VALUE MAKES IT SO IT RETURNS OBJECT NOT ARRAY AS SAVED
-  if (Object.keys(roleData).indexOf('0') == 0) {
-    let newRoleData = {};
-    // this is ivan id XD
-    let rolesArray = Object.values(roleData);
-    rolesArray.forEach(role => {
-      newRoleData[role] = '143144196016963584';
-    });
-    client.rolesData.set(guildId, newRoleData);
-    roleData = newRoleData
-  }
-  // TEMP CONVERSION CODE END
   return roleData;
 }
 
@@ -105,7 +92,7 @@ exports.run = async (client, message, args, _level) => {
 
   switch (subcommand) {
     case "join": {
-      if (!role || !allowedRoles.includes(role)) {
+      if (!role || !allowedRoles[role]) {
         // invalid rank, send allowed ranks
         return sendInvalidRole(client, channel);
       }
