@@ -1,7 +1,7 @@
 const Enmap = require("enmap");
 
 const PERMISSION_FLAGS = require("discord.js").Permissions.FLAGS;
-
+const ALFRED_ROLE = 'TNY';
 const BLACKLISTED_ROLES = [
   "Admin",
   "Moderator",
@@ -145,11 +145,28 @@ reason: 'dynamic role' });
           permissionOverwrites: [
             {
               id: message.guild.roles.everyone,
-              deny: [PERMISSION_FLAGS.VIEW_CHANNEL, PERMISSION_FLAGS.SEND_MESSAGES, PERMISSION_FLAGS.READ_MESSAGE_HISTORY]
+              deny: [
+                  PERMISSION_FLAGS.VIEW_CHANNEL,
+                  PERMISSION_FLAGS.SEND_MESSAGES,
+                  PERMISSION_FLAGS.READ_MESSAGE_HISTORY
+              ]
             },
             {
               id: message.guild.roles.cache.find(roleToFind => roleToFind.name == role),
-              allow: [PERMISSION_FLAGS.VIEW_CHANNEL, PERMISSION_FLAGS.SEND_MESSAGES, PERMISSION_FLAGS.READ_MESSAGE_HISTORY]
+              allow: [
+                  PERMISSION_FLAGS.VIEW_CHANNEL,
+                  PERMISSION_FLAGS.SEND_MESSAGES,
+                  PERMISSION_FLAGS.READ_MESSAGE_HISTORY
+              ]
+            },
+            {
+              id: message.guild.roles.cache.find(roleToFind => roleToFind.name == ALFRED_ROLE),
+              allow: [
+                  PERMISSION_FLAGS.VIEW_CHANNEL,
+                  PERMISSION_FLAGS.SEND_MESSAGES,
+                  PERMISSION_FLAGS.READ_MESSAGE_HISTORY,
+                  PERMISSION_FLAGS.MANAGE_CHANNELS
+              ]
             }
           ]});
         channel.send("Role and channel created.");
