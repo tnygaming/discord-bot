@@ -55,7 +55,7 @@ module.exports = {
             "last"
         ],
         "complexity": [
-            "error",
+            "error", 
             { "max": 50 }
         ],
         "computed-property-spacing": [
@@ -150,11 +150,7 @@ module.exports = {
         "no-extend-native": "off",
         "no-extra-bind": "error",
         "no-extra-label": "error",
-        "no-extra-parens": [
-            "error",
-            "all",
-            { "nestedBinaryExpressions": false }
-        ],
+        "no-extra-parens": "error",
         "no-floating-decimal": "error",
         "no-implicit-globals": "error",
         "no-implied-eval": "error",
@@ -218,9 +214,9 @@ module.exports = {
         "no-unsafe-optional-chaining": "error",
         "no-unused-expressions": "error",
         "no-unused-vars": [
-            "error",
-            {
-                "argsIgnorePattern": "^_"
+            "error", 
+            { 
+                "argsIgnorePattern": "^_" 
             }
         ],
         "no-use-before-define": "warn",
