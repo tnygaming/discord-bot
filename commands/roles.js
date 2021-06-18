@@ -1,8 +1,6 @@
 const Enmap = require("enmap");
 
-// permissions maybe use flag const from lib later?
-const MANAGE_MESSAGES = 'MANAGE_MESSAGES';
-const ADMINISTRATOR = 'ADMINISTRATOR';
+const PERMISSION_FLAGS = require("discord.js").Permissions.FLAGS;
 
 const BLACKLISTED_ROLES = [
   "Admin",
@@ -25,7 +23,8 @@ function sendHelp(channel) {
 // This is okay for now but prob want to move this later to another
 // file like util and change from boolean to accepting bitmask
 function checkPermissions(message, isMod, isAdmin) {
-  return (isMod && message.member.hasPermission(MANAGE_MESSAGES)) || (isAdmin && message.member.hasPermission(ADMINISTRATOR))
+  return (isMod && message.member.hasPermission(PERMISSION_FLAGS.MANAGE_MESSAGES)) ||
+         (isAdmin && message.member.hasPermission(PERMISSION_FLAGS.ADMINISTRATOR))
 }
 
 function validateRoleOwner(client, message, roleName) {
@@ -36,13 +35,18 @@ function validateRoleOwner(client, message, roleName) {
 function getAllowedRoles(client, guildId) {
   let roleData = client.rolesData.ensure(guildId, {});
   // TEMP CONVERSION CODE START
-  if (Array.isArray(roleData)) {
+  // THIS IS A REAL HATE ENMAP MOMENT ENSURE DEFAULT VALUE MAKES IT SO IT RETURNS OBJECT NOT ARRAY AS SAVED
+  if (Object.keys(roleData).indexOf('0') == 0) {
     let newRoleData = {};
     // this is ivan id XD
-    roleData.forEach(role => newRoleData[role] = '143144196016963584');
+    let rolesArray = Object.values(roleData);
+    rolesArray.forEach(role => {
+      newRoleData[role] = '143144196016963584';
+    });
     client.rolesData.set(guildId, newRoleData);
     roleData = newRoleData
   }
+  // TEMP CONVERSION CODE END
   return roleData;
 }
 
@@ -68,10 +72,10 @@ function deregisterRole(client, guildId, roleName) {
 
 function updateRoleOwner(client, message, roleName) {
   let roleData = client.rolesData.ensure(message.guild.id, {});
-  if (message.mentions.members.length != 1) {
+  if (message.mentions.members.size != 1) {
     return message.channel.send("Please specify new owner with a @mention.");
   }
-  let newOwner = message.mentions.members.firstKey;
+  let newOwner = message.mentions.members.firstKey();
   roleData[roleName] = newOwner;
   client.rolesData.set(message.guild.id, roleData);
   return message.channel.send(`${roleName} role has a new owner of ${newOwner}`);
@@ -148,9 +152,19 @@ exports.run = async (client, message, args, _level) => {
           mentionable: true
         }
         registerNewRole(client, message.guild.id, message.member.id, role);
-        server.roles.create({ data: roleData,
+        await server.roles.create({ data: roleData,
 reason: 'dynamic role' });
-        server.channels.create(role, { reason: 'dynamic role based channel' });
+        await server.channels.create(role, { reason: 'dynamic role based channel',
+          permissionOverwrites: [
+            {
+              id: message.guild.roles.everyone,
+              deny: [PERMISSION_FLAGS.VIEW_CHANNEL, PERMISSION_FLAGS.SEND_MESSAGES, PERMISSION_FLAGS.READ_MESSAGE_HISTORY]
+            },
+            {
+              id: message.guild.roles.cache.find(roleToFind => roleToFind.name == role),
+              allow: [PERMISSION_FLAGS.VIEW_CHANNEL, PERMISSION_FLAGS.SEND_MESSAGES, PERMISSION_FLAGS.READ_MESSAGE_HISTORY]
+            }
+          ]});
         channel.send("Role and channel created.");
       }
       break;
