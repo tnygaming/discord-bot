@@ -11,11 +11,12 @@ const BLACKLISTED_ROLES = [
 function sendHelp(channel) {
   return channel.send(
 `= USAGE =
-.roles create [role]   :: Create a new role (Mod only)
-.roles remove [role]   :: Remove a role (Mod only)
-.roles join [role]     :: Join a role
-.roles leave [role]    :: Leave a role
-.roles list            :: Displays all available roles`,
+.roles create [role] {category}   :: Create a new role optional category (Mod only)
+.roles join [role]                :: Join a role
+.roles leave [role]               :: Leave a role
+.roles remove [role]              :: Remove a role (Mod only)
+.roles set [role] [@user]         :: Sets owner of role to @user (Admin only)
+.roles list                       :: Displays all available roles`,
   {code: "asciidoc"}
 );
 }
@@ -132,7 +133,11 @@ exports.run = async (client, message, args, _level) => {
       if (memberRole || BLACKLISTED_ROLES.includes(role)) {
         channel.send("Invalid role name, please choose a different name");
       } else {
-        // TODO: This currently adds the lowest permission set possible, but can we add even less?
+        let category = message.guild.channels.cache.find(channelToFind => channelToFind.name === args[2]);
+        if (!category) {
+          category = message.guild.channels.cache.find(channelToFind => channelToFind.name === 'roles');
+        }
+
         let roleData = {
           name: role,
           hoist: false,
@@ -142,6 +147,7 @@ exports.run = async (client, message, args, _level) => {
         await server.roles.create({ data: roleData,
 reason: 'dynamic role' });
         await server.channels.create(role, { reason: 'dynamic role based channel',
+          parent: category,
           permissionOverwrites: [
             {
               id: message.guild.roles.everyone,
@@ -184,7 +190,10 @@ reason: 'dynamic role' });
         channel.send("You must be the role owner or admin to delete role.");
       } else {
         deregisterRole(client, message.guild.id, role);
-        server.channels.cache.find(channelToFind => channelToFind.name === role).delete();
+        let channelToRemove = server.channels.cache.find(channelToFind => channelToFind.name === role);
+        if (!channelToRemove) {
+          channelToRemove.delete();
+        }
         memberRole.delete();
         channel.send("Role removed.");
       }
