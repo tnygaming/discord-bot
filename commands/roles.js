@@ -10,27 +10,27 @@ const BLACKLISTED_ROLES = [
 
 function sendHelp(channel) {
   return channel.send(
-`= USAGE =
+      `= USAGE =
 .roles create [role] {category}   :: Create a new role optional category (Mod only)
 .roles join [role]                :: Join a role
 .roles leave [role]               :: Leave a role
 .roles remove [role]              :: Remove a role (Mod only)
 .roles set [role] [@user]         :: Sets owner of role to @user (Admin only)
 .roles list                       :: Displays all available roles`,
-  {code: "asciidoc"}
-);
+      {code: "asciidoc"}
+  );
 }
 
 // This is okay for now but prob want to move this later to another
 // file like util and change from boolean to accepting bitmask
 function checkPermissions(message, isMod, isAdmin) {
   return (isMod && message.member.hasPermission(PERMISSION_FLAGS.MANAGE_MESSAGES)) ||
-         (isAdmin && message.member.hasPermission(PERMISSION_FLAGS.ADMINISTRATOR))
+      (isAdmin && message.member.hasPermission(PERMISSION_FLAGS.ADMINISTRATOR))
 }
 
 function validateRoleOwner(client, message, roleName) {
   const roleData = client.rolesData.ensure(message.guild.id, {});
-  return checkPermissions(message, false, true) || (roleData[roleName] && roleData[roleName] == message.member.id);
+  return checkPermissions(message, false, true) || (roleData[roleName] && roleData[roleName] === message.member.id);
 }
 
 function getAllowedRoles(client, guildId) {
@@ -41,7 +41,7 @@ function getAllowedRoles(client, guildId) {
 function sendInvalidRole(client, channel) {
   let allowedRoles = getAllowedRoles(client, channel.guild.id);
   return channel.send(`${"Invalid role, available role:\n • "}${Object.keys(allowedRoles).sort()
-.join("\n • ")}`, {code: "asciidoc"});
+      .join("\n • ")}`, {code: "asciidoc"});
 }
 
 function registerNewRole(client, guildId, ownerId, newRoleName) {
@@ -60,7 +60,7 @@ function deregisterRole(client, guildId, roleName) {
 
 function updateRoleOwner(client, message, roleName) {
   let roleData = client.rolesData.ensure(message.guild.id, {});
-  if (message.mentions.members.size != 1) {
+  if (message.mentions.members.size !== 1) {
     return message.channel.send("Please specify new owner with a @mention.");
   }
   let newOwner = message.mentions.members.firstKey();
@@ -99,7 +99,7 @@ exports.run = async (client, message, args, _level) => {
       }
       // TODO: Add check that this role does not have any abuse-able permissions
       if (memberRole) {
-        message.member.roles.add(memberRole);
+        await message.member.roles.add(memberRole);
         channel.send(`${author.username} has been added to role: ${role}`);
       } else {
         console.log("No role found");
@@ -111,12 +111,12 @@ exports.run = async (client, message, args, _level) => {
         // invalid rank, send allowed ranks
         return sendInvalidRole(client, channel);
       }
-        if (memberRole) {
-          message.member.roles.remove(memberRole);
-          channel.send(`${author.username} has been removed from role: ${role}`);
-        } else {
-          console.log("No role found");
-        }
+      if (memberRole) {
+        await message.member.roles.remove(memberRole);
+        channel.send(`${author.username} has been removed from role: ${role}`);
+      } else {
+        console.log("No role found");
+      }
 
       break;
     }
@@ -133,8 +133,8 @@ exports.run = async (client, message, args, _level) => {
       if (memberRole || BLACKLISTED_ROLES.includes(role)) {
         channel.send("Invalid role name, please choose a different name");
       } else {
-        let category = message.guild.channels.cache.find(channelToFind => channelToFind.name === args[2]);
-        if (!category) {
+        let category = message.guild.channels.cache.find(channelToFind => channelToFind.name.toLowerCase() === args[2].toLowerCase());
+        if (category === undefined) {
           category = message.guild.channels.cache.find(channelToFind => channelToFind.name === 'roles');
         }
 
@@ -145,28 +145,28 @@ exports.run = async (client, message, args, _level) => {
         }
         registerNewRole(client, message.guild.id, message.member.id, role);
         await server.roles.create({ data: roleData,
-reason: 'dynamic role' });
+          reason: 'dynamic role' });
         await server.channels.create(role, { reason: 'dynamic role based channel',
           parent: category,
           permissionOverwrites: [
             {
               id: message.guild.roles.everyone,
               deny: [
-                  PERMISSION_FLAGS.VIEW_CHANNEL,
-                  PERMISSION_FLAGS.SEND_MESSAGES,
-                  PERMISSION_FLAGS.READ_MESSAGE_HISTORY
+                PERMISSION_FLAGS.VIEW_CHANNEL,
+                PERMISSION_FLAGS.SEND_MESSAGES,
+                PERMISSION_FLAGS.READ_MESSAGE_HISTORY
               ]
             },
             {
-              id: message.guild.roles.cache.find(roleToFind => roleToFind.name == role),
+              id: message.guild.roles.cache.find(roleToFind => roleToFind.name === role),
               allow: [
-                  PERMISSION_FLAGS.VIEW_CHANNEL,
-                  PERMISSION_FLAGS.SEND_MESSAGES,
-                  PERMISSION_FLAGS.READ_MESSAGE_HISTORY
+                PERMISSION_FLAGS.VIEW_CHANNEL,
+                PERMISSION_FLAGS.SEND_MESSAGES,
+                PERMISSION_FLAGS.READ_MESSAGE_HISTORY
               ]
             },
             {
-              id: message.guild.roles.cache.find(roleToFind => roleToFind.name == ALFRED_ROLE),
+              id: message.guild.roles.cache.find(roleToFind => roleToFind.name === ALFRED_ROLE),
               allow: [
                   PERMISSION_FLAGS.VIEW_CHANNEL,
                   PERMISSION_FLAGS.SEND_MESSAGES,
@@ -191,17 +191,19 @@ reason: 'dynamic role' });
       } else {
         deregisterRole(client, message.guild.id, role);
         let channelToRemove = server.channels.cache.find(channelToFind => channelToFind.name === role);
-        if (!channelToRemove) {
-          channelToRemove.delete();
+        let channelMessage = '';
+        if (channelToRemove !== undefined) {
+          await channelToRemove.delete();
+          channelMessage = "and channel "
         }
-        memberRole.delete();
-        channel.send("Role removed.");
+        await memberRole.delete();
+        channel.send(`Role ${channelMessage}removed.`);
       }
       break;
     }
     case "list": {
       return channel.send(`${"Available roles:\n • "}${Object.keys(allowedRoles).sort()
-.join("\n • ")}`, {code: "asciidoc"});
+          .join("\n • ")}`, {code: "asciidoc"});
     }
     case "set": {
       if (!checkPermissions(message, false, true)) {
