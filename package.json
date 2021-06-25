@@ -32,7 +32,6 @@
     "erlpack": "^0.1.3",
     "finnhub": "^1.2.1",
     "giphy-api": "^2.0.1",
-    "glob-parent": ">=5.1.2",
     "inquirer": "^8.0.0",
     "libsodium-wrappers": "^0.7.9",
     "moment": "^2.29.1",
