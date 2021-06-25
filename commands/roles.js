@@ -4,8 +4,7 @@ const PERMISSION_FLAGS = require("discord.js").Permissions.FLAGS;
 const ALFRED_ROLE = 'TNY';
 const BLACKLISTED_ROLES = [
   "Admin",
-  "Moderator",
-  "tnydotatoes"
+  "Moderator"
 ];
 
 function sendHelp(channel) {
