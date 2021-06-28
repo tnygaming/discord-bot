@@ -132,9 +132,9 @@ exports.run = async (client, message, args, _level) => {
       if (memberRole || BLACKLISTED_ROLES.includes(role)) {
         channel.send("Invalid role name, please choose a different name");
       } else {
-        let category = message.guild.channels.cache.find(channelToFind => channelToFind.name.toLowerCase() === args[2].toLowerCase());
-        if (category === undefined) {
-          category = message.guild.channels.cache.find(channelToFind => channelToFind.name === 'roles');
+        let category = message.guild.channels.cache.find(channelToFind => channelToFind.name === 'roles');
+        if (args[2] !== undefined) {
+          category = message.guild.channels.cache.find(channelToFind => channelToFind.name.toLowerCase() === args[2].toLowerCase());
         }
 
         let roleData = {
