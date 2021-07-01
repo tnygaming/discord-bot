@@ -11,11 +11,12 @@ function sendHelp(channel) {
   return channel.send(
       `= USAGE =
 .roles create [role] {category}   :: Create a new role optional category (Mod only)
+.roles enroll [role] [@user...]   :: Enroll user(s) to a role (Mod only)
 .roles join [role]                :: Join a role
 .roles leave [role]               :: Leave a role
+.roles list                       :: Displays all available roles
 .roles remove [role]              :: Remove a role (Mod only)
-.roles set [role] [@user]         :: Sets owner of role to @user (Admin only)
-.roles list                       :: Displays all available roles`,
+.roles set [role] [@user]         :: Sets owner of role to @user (Admin only)`,
       {code: "asciidoc"}
   );
 }
@@ -57,15 +58,26 @@ function deregisterRole(client, guildId, roleName) {
   }
 }
 
+// I went for a pun-ish function name. t0shi
+function enroleUsers(client, message, roleName, memberRole) {
+  if (message.mentions.members.size < 1) {
+    return message.channel.send("Please specify a user with a @mention.");
+  }
+  let users = message.mentions.members.map(user => user.displayName).join(", ");
+  message.mentions.members.mapValues(member => member.roles.add(memberRole));
+  return message.channel.send(`${users} has been added to ${roleName} role`);
+}
+
 function updateRoleOwner(client, message, roleName) {
   let roleData = client.rolesData.ensure(message.guild.id, {});
   if (message.mentions.members.size !== 1) {
     return message.channel.send("Please specify new owner with a @mention.");
   }
   let newOwner = message.mentions.members.firstKey();
+  let username = message.mentions.members.first().displayName;
   roleData[roleName] = newOwner;
   client.rolesData.set(message.guild.id, roleData);
-  return message.channel.send(`${roleName} role has a new owner of ${newOwner}`);
+  return message.channel.send(`${roleName} role has a new owner of ${username}`);
 }
 
 //
@@ -91,34 +103,6 @@ exports.run = async (client, message, args, _level) => {
   }
 
   switch (subcommand) {
-    case "join": {
-      if (!role || !allowedRoles[role]) {
-        // invalid rank, send allowed ranks
-        return sendInvalidRole(client, channel);
-      }
-      // TODO: Add check that this role does not have any abuse-able permissions
-      if (memberRole) {
-        await message.member.roles.add(memberRole);
-        channel.send(`${author.username} has been added to role: ${role}`);
-      } else {
-        console.log("No role found");
-      }
-      break;
-    }
-    case "leave": {
-      if (!role || !allowedRoles[role]) {
-        // invalid rank, send allowed ranks
-        return sendInvalidRole(client, channel);
-      }
-      if (memberRole) {
-        await message.member.roles.remove(memberRole);
-        channel.send(`${author.username} has been removed from role: ${role}`);
-      } else {
-        console.log("No role found");
-      }
-
-      break;
-    }
     case "create": {
       if (!checkPermissions(message, true, true)) {
         channel.send("Sorry, you must be Moderator or higher to create a role.");
@@ -178,6 +162,54 @@ exports.run = async (client, message, args, _level) => {
       }
       break;
     }
+    case "enroll": {
+      if (!checkPermissions(message, true, true)) {
+        channel.send("Sorry, you must be Moderator or higher to create a role.");
+        break;
+      }
+      if (!role || !allowedRoles[role]) {
+        // invalid rank, send allowed ranks
+        return sendInvalidRole(client, channel);
+      }
+      if (!memberRole || !allowedRoles[role] || BLACKLISTED_ROLES.includes(role)) {
+        channel.send("Invalid role name. Please choose a different name.");
+      } else {
+        enroleUsers(client, message, role, memberRole);
+      }
+      break;
+    }
+    case "join": {
+      if (!role || !allowedRoles[role]) {
+        // invalid rank, send allowed ranks
+        return sendInvalidRole(client, channel);
+      }
+      // TODO: Add check that this role does not have any abuse-able permissions
+      if (memberRole) {
+        await message.member.roles.add(memberRole);
+        channel.send(`${author.username} has been added to role: ${role}`);
+      } else {
+        console.log("No role found");
+      }
+      break;
+    }
+    case "leave": {
+      if (!role || !allowedRoles[role]) {
+        // invalid rank, send allowed ranks
+        return sendInvalidRole(client, channel);
+      }
+      if (memberRole) {
+        await message.member.roles.remove(memberRole);
+        channel.send(`${author.username} has been removed from role: ${role}`);
+      } else {
+        console.log("No role found");
+      }
+
+      break;
+    }
+    case "list": {
+      return channel.send(`${"Available roles:\n • "}${Object.keys(allowedRoles).sort()
+          .join("\n • ")}`, {code: "asciidoc"});
+    }
     case "remove": {
       if (!checkPermissions(message, true, true)) {
         channel.send("Sorry, you must be Moderator or higher to create a role.");
@@ -199,10 +231,6 @@ exports.run = async (client, message, args, _level) => {
         channel.send(`Role ${channelMessage}removed.`);
       }
       break;
-    }
-    case "list": {
-      return channel.send(`${"Available roles:\n • "}${Object.keys(allowedRoles).sort()
-          .join("\n • ")}`, {code: "asciidoc"});
     }
     case "set": {
       if (!checkPermissions(message, false, true)) {
