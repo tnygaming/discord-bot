@@ -15,7 +15,12 @@ const Patcher = require('./modules/Patcher')
 // This is your client. Some people call it `bot`, some people call it `self`,
 // some might call it `cootchie`. Either way, when you see `client.something`,
 // or `bot.something`, this is what we're refering to. Your client.
-const client = new Discord.Client();
+const client = new Discord.Client({intents:
+      [
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Discord.Intents.FLAGS.GUILDS
+]});
 
 // Here we load the config file that contains our token and our prefix values.
 client.config = require("./config.js");
@@ -46,7 +51,7 @@ client.rezData = new Enmap({name: "rezData"});
 // we need to wrap stuff in an anonymous function. It's annoying but it works.
 
 const init = async () => {
-  // Apply any patches 
+  // Apply any patches
   Patcher.applyPatches();
   // Here we load **commands** into memory, as a collection, so they're accessible
   // here and everywhere else.
@@ -90,7 +95,7 @@ const init = async () => {
   // Here we login the client.
   client.login(client.config.token);
 
-  
+
 
 // End top-level async/await function.
 };

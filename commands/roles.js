@@ -1,5 +1,7 @@
 const Enmap = require("enmap");
 
+const { MessageEmbed } = require("discord.js");
+
 const PERMISSION_FLAGS = require("discord.js").Permissions.FLAGS;
 const ALFRED_ROLE = 'TNY';
 const BLACKLISTED_ROLES = [
@@ -7,18 +9,25 @@ const BLACKLISTED_ROLES = [
   "Moderator"
 ];
 
+function buildHelpEmbed() {
+  return new MessageEmbed()
+      .setTitle('Roles')
+      .setDescription('Roles command options')
+      .addFields(
+          { name: '.roles create [role] {category}', value: 'Create a new role optional category (Mod only)'},
+          { name: '.roles enroll [role] [@user...]', value: 'Enroll user(s) to a role (Mod only)'},
+          { name: '.roles join [role]', value: 'Join a role'},
+          { name: '.roles leave [role]', value: 'Leave a role'},
+          { name: '.roles list', value: 'Displays all available roles'},
+          { name: '.roles remove [role]', value: 'Remove a role (Mod only)'},
+          { name: '.roles set [role] [@user]', value: 'Sets owner of role to @user (Admin only)'},
+      )
+      .setTimestamp()
+      .setFooter("BOT Alfred");
+}
+
 function sendHelp(channel) {
-  return channel.send(
-      `= USAGE =
-.roles create [role] {category}   :: Create a new role optional category (Mod only)
-.roles enroll [role] [@user...]   :: Enroll user(s) to a role (Mod only)
-.roles join [role]                :: Join a role
-.roles leave [role]               :: Leave a role
-.roles list                       :: Displays all available roles
-.roles remove [role]              :: Remove a role (Mod only)
-.roles set [role] [@user]         :: Sets owner of role to @user (Admin only)`,
-      {code: "asciidoc"}
-  );
+  return channel.send({embeds: [buildHelpEmbed()] });
 }
 
 // This is okay for now but prob want to move this later to another
