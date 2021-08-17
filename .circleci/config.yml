@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   deploy:
     docker:
-      - image: node:current-buster
+      - image: node:lts-buster
     steps:
       - run:
           name: Pre-Deploy Notification
