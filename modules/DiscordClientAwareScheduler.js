@@ -10,7 +10,7 @@ class DiscordClientAwareScheduler {
   }
 
   register(schedulableFileName) {
-    console.log(`Loading schedulable: ${schedulableFileName}`)
+    this.client.logger.log(`Loading schedulable: ${schedulableFileName}`)
     const props = require(`../schedulables/${schedulableFileName}`)
     schedule.scheduleJob(props.conf.cron, () => {
       const startTime = Date.now()

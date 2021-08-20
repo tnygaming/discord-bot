@@ -157,13 +157,64 @@ module.exports = client => {
     }
     return false;
   };
+  
+  // COMMAND STUFF
+  client.loadSlashCommand = command => {
+    try {
+      client.logger.log(`Loading Slash Command: ${command}`);
+      const props = require(`../slash_commands/${command}`);
+
+      const commandData = props.conf.data
+      const commandName = commandData.name
+      client.slashCommands.set(commandName, props);
+
+      const deployedVersion = client.commandVersions.get(commandName)
+      const currentVersion = props.conf.version
+      console.log(`Processing command: [${commandName}] | deployedVersion:[${deployedVersion}] | currentVersion:[${currentVersion}]`)
+      
+      if(!currentVersion) {
+        console.log(`!!!!! version must be set to deploy command`)
+        return
+      }
+
+      client.commandVersions.set(commandName, currentVersion);
+      if(currentVersion == -1 || !deployedVersion || currentVersion > deployedVersion) {
+        const guildId = "733211358073454683"  // todo: move these to config file?
+        const botId = "733210444646449272"
+        
+        if(!botId) {
+          console.log(`!!!!! botId must be supplied to deploy slash commands `)
+          return
+        }
+        console.log(`Deploying command: [${commandName}]`)
+        
+        // todo: might be better to not use the guilds() for "production", but its not a big deal since we only have one server
+        //        and commands are deployed instantly with guilds() compared to ~1 hr without
+        client.api.applications(botId).guilds(guildId).commands.post({data: commandData}) 
+      }
+
+      return false;
+    } catch (e) {
+      return `Unable to load slash command ${command}: ${e}`;
+    }
+  };
 
   // MISCELANEOUS NON-CRITICAL FUNCTIONS
   
   /**
    * Retrieves the discord username from the user's discord id.
    */
-  client.getDiscordUsername = discordId => {
+  client.getDiscordUsername = async discordId => {
+    const userObj = await client.users.fetch(discordId)
+    if (userObj) {
+      return userObj.username;
+    }
+  
+    return '';
+  }
+  
+  // deprecated, call the async version instead
+  client.getDiscordUsernameDeprecated = discordId => {
     const userObj = client.users.cache.get(discordId);
     if (userObj) {
       return userObj.username;
@@ -176,7 +227,17 @@ module.exports = client => {
    * Retrieves the discord user from the user's alias. e.g.
    * <@!258094203482> -> discord user for 258094203482
    */
-  client.parseDiscordUser = discordAlias => {
+  client.parseDiscordUser = async discordAlias => {
+    if (!discordAlias || !discordAlias.startsWith("<@")) {
+      return undefined
+    }
+
+    const discordId = discordAlias.replace(/[<@!>]/g, '');
+    return await client.users.fetch(discordId)
+  }
+  
+  // deprecated, call the async version instead
+  client.parseDiscordUserDeprecated = discordAlias => {
     if (!discordAlias || !discordAlias.startsWith("<@")) {
       return undefined
     }

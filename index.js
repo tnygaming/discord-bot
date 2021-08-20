@@ -12,6 +12,7 @@ const Enmap = require("enmap");
 const DiscordClientAwareScheduler = require("./modules/DiscordClientAwareScheduler.js");
 const roleClaim = require('./modules/roleReaction')
 const Patcher = require('./modules/Patcher')
+const CommandUtil = require("./slash_commands/util/CommandUtil")
 // This is your client. Some people call it `bot`, some people call it `self`,
 // some might call it `cootchie`. Either way, when you see `client.something`,
 // or `bot.something`, this is what we're refering to. Your client.
@@ -84,7 +85,32 @@ const init = async () => {
     const response = scheduler.register(file);
     if (response) console.log(response);
   });
+  
+  // COMMAND STUFF
+  client.slashCommands = new Enmap();
+  client.commandVersions = new Enmap({name: "commandVersions"});
 
+  // load slash commands
+  const slashCmdFiles = await readdir("./slash_commands/");
+  client.logger.log(`~ Loading a total of ${slashCmdFiles.length} slash commands. ~`);
+  slashCmdFiles.forEach(f => {
+    if (!f.endsWith(".js")) return;
+    const response = client.loadSlashCommand(f);
+    if (response) console.log(response);
+  });
+
+  // handle interactions
+  client.ws.on('INTERACTION_CREATE', async interaction => {
+    const cmd = client.slashCommands.get(interaction.data.name)
+    if(cmd) {
+      const subcommand = CommandUtil.getSubcommand(interaction)
+      const args = CommandUtil.getArgs(interaction)
+      cmd.run(client, interaction, args, subcommand)
+    } else {
+      console.log("Could not find command: " + interaction.data.name)
+    }
+  })
+  
   // Generate a cache of client permissions for pretty perm names in commands.
   client.levelCache = {};
   for (let i = 0; i < client.config.permLevels.length; i++) {

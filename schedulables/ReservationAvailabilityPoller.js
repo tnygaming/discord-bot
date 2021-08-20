@@ -69,7 +69,7 @@ module.exports.run = async client => {
   const monthsToWatchers = getMonthsToWatchers(client)
   const monthsToCheck = [...monthsToWatchers.keys()]
 
-  console.log(`Checking months: [${monthsToCheck}]`)
+  // console.log(`Checking months: [${monthsToCheck}]`)
 
   for (const month of monthsToCheck) {
     // Check availability in month and get new availabilities

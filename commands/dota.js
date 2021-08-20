@@ -17,7 +17,7 @@ exports.run = async (client, message, args, level) => {
     return sendHelp(channel)
   }
   let dotaId = args[1]
-  let discordUser = client.parseDiscordUser(args[1])
+  let discordUser = client.parseDiscordUserDeprecated(args[1])
 
   switch (subcommand) {
     case 'register':
