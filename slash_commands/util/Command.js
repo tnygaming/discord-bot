@@ -3,7 +3,8 @@
  *
  * 1. Move command file from "/commands" to "/slash_commands" (or archive and make a copy)
  * 2. Define exports.conf (old exports.conf and exports.help are not needed anymore)
- *      - version: Used to determine if we need to re-provision a command, increment this each time the command's config is updated
+ *      - version: Used to determine if we need to re-provision a command, increment this each time the command's config is updated.
+ *                   For testing, can be set to '-1' to always deploy 
  *			- data: JSON object that represents the command's config. Can use this class to help build it.  See "/slash_commands/rank.js" for an example
  * 3. Change parameters of exports.run from "(client, message, args, level)" to "(client, interaction, args, subcommand)" 
  *      - args: now a map instead of an array.  ex: args["rank"] will return the parameter named "rank"

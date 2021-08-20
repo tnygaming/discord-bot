@@ -65,7 +65,6 @@ exports.run = async (client, message, args, level) => {
       break;
     }
     case "get": {
-      console.log(args[1])
       const discordUser = await client.parseDiscordUser(args[1]);
       if (discordUser == undefined) {
         // missing/wrong argument, send help

@@ -161,26 +161,26 @@ module.exports = client => {
   // COMMAND STUFF
   client.loadSlashCommand = command => {
     try {
-      client.logger.log(`Loading Slash Command: ${command}`);
-      const props = require(`../slash_commands/${command}`);
+      client.logger.log(`Loading Slash Command: ${command}`)
+      const props = require(`../slash_commands/${command}`)
 
       const commandData = props.conf.data
       const commandName = commandData.name
-      client.slashCommands.set(commandName, props);
+      client.slashCommands.set(commandName, props)
 
       const deployedVersion = client.commandVersions.get(commandName)
       const currentVersion = props.conf.version
       console.log(`Processing command: [${commandName}] | deployedVersion:[${deployedVersion}] | currentVersion:[${currentVersion}]`)
       
       if(!currentVersion) {
-        console.log(`!!!!! version must be set to deploy command`)
+        console.log(`!!!!! version must be set to deploy command (and greater than zero)`)
         return
       }
 
       client.commandVersions.set(commandName, currentVersion);
       if(currentVersion == -1 || !deployedVersion || currentVersion > deployedVersion) {
-        const guildId = "733211358073454683"  // todo: move these to config file?
-        const botId = "733210444646449272"
+        const guildId = undefined //"733211358073454683"  // todo: move these to config file?
+        const botId = undefined //"733210444646449272"
         
         if(!botId) {
           console.log(`!!!!! botId must be supplied to deploy slash commands `)
@@ -213,7 +213,7 @@ module.exports = client => {
     return '';
   }
   
-  // deprecated, call the async version instead
+  // deprecated, call the async version instead. This only checks the cache so sometimes the user won't be found.
   client.getDiscordUsernameDeprecated = discordId => {
     const userObj = client.users.cache.get(discordId);
     if (userObj) {
@@ -236,7 +236,7 @@ module.exports = client => {
     return await client.users.fetch(discordId)
   }
   
-  // deprecated, call the async version instead
+  // deprecated, call the async version instead. This only checks the cache so sometimes the user won't be found.
   client.parseDiscordUserDeprecated = discordAlias => {
     if (!discordAlias || !discordAlias.startsWith("<@")) {
       return undefined

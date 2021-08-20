@@ -104,7 +104,7 @@ function getRankIndex(rank) {
 }
 
 exports.conf = {
-  version: 2, // INCREMENT THIS IF YOU CHANGED THE COMMAND CONFIG, otherwise the changes won't be deployed. Can set to '-1' to always deploy(for testing)
+  version: 1, // INCREMENT THIS IF YOU CHANGED THE COMMAND CONFIG, otherwise the changes won't be deployed. Can set to '-1' to always deploy(for testing)
   data: new Command("rank", "flex your rank")
   .addSubcommand(new Subcommand("set", "set own rank")
     .addParameter(new Parameter("rank", OPTION_TYPE.STRING, true, "rank to set"))

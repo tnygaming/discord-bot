@@ -87,16 +87,16 @@ const init = async () => {
   });
   
   // COMMAND STUFF
-  client.slashCommands = new Enmap();
-  client.commandVersions = new Enmap({name: "commandVersions"});
+  client.slashCommands = new Enmap() // stores all slash commands 
+  client.commandVersions = new Enmap({name: "commandVersions"}) // stores the deployed version for each command
 
   // load slash commands
-  const slashCmdFiles = await readdir("./slash_commands/");
-  client.logger.log(`~ Loading a total of ${slashCmdFiles.length} slash commands. ~`);
+  const slashCmdFiles = await readdir("./slash_commands/")
+  client.logger.log(`~ Loading a total of ${slashCmdFiles.length} slash commands. ~`)
   slashCmdFiles.forEach(f => {
-    if (!f.endsWith(".js")) return;
-    const response = client.loadSlashCommand(f);
-    if (response) console.log(response);
+    if (!f.endsWith(".js")) return
+    const response = client.loadSlashCommand(f)
+    if (response) console.log(response)
   });
 
   // handle interactions
