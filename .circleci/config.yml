@@ -7,7 +7,7 @@ jobs:
     steps:
       - run:
           name: Pre-Deploy Notification
-          command: curl --request POST --url https://discord.com/api/webhooks/849719726695514172/2CA6D5VPA-j-QetLQdDlHRIHU0BTJIHWyqez3hSOQ4846uWbg2qB3oZDkXAT87M6VQeQ --header 'Content-Type:application/json' --data '{"username":"CircleCI","content":"Alfred deployment started. '$CIRCLE_BUILD_URL'"}'
+          command: curl --request POST --url $discordhook --header 'Content-Type:application/json' --data '{"username":"CircleCI","content":"Alfred deployment started. '$CIRCLE_BUILD_URL'"}'
       - add_ssh_keys:
           fingerprints:
             - "4d:d2:c6:68:e7:2c:c0:9d:d7:11:ac:c4:5c:34:67:52"
@@ -44,7 +44,7 @@ jobs:
           command: ssh -o StrictHostKeychecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost "npx pm2 restart alfred"
       - run:
           name: Post-Deploy Notification
-          command: curl --request POST --url https://discord.com/api/webhooks/849719726695514172/2CA6D5VPA-j-QetLQdDlHRIHU0BTJIHWyqez3hSOQ4846uWbg2qB3oZDkXAT87M6VQeQ --header 'Content-Type:application/json' --data '{"username":"CircleCI","content":"Alfred has been deployed."}'
+          command: curl --request POST --url $discordhook --header 'Content-Type:application/json' --data '{"username":"CircleCI","content":"Alfred has been deployed."}'
 
 workflows:
   deployment:
