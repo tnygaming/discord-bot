@@ -53,7 +53,7 @@ class RecentDotaMatchAnnouncer {
             dotaId: player.account_id,
             dotaName: player.personaname,
             discordId: matchingConf.discordId,
-            discordName: client.getDiscordUsername(matchingConf.discordId),
+            discordName: client.getDiscordUsernameDeprecated(matchingConf.discordId),
             team: player.isRadiant ? 'Radiant' : 'Dire'
           }
         })

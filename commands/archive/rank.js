@@ -56,16 +56,16 @@ exports.run = async (client, message, args, level) => {
         } else {
           channel.send(`${message.author.username}'s rank was set to ${rank}`);
         }
-      
+
 
       break;
     }
     case "reset": {
-      reset(client, message, channel, args[1])
+      await reset(client, message, channel, args[1])
       break;
     }
     case "get": {
-      const discordUser = client.parseDiscordUser(args[1]);
+      const discordUser = await client.parseDiscordUser(args[1]);
       if (discordUser == undefined) {
         // missing/wrong argument, send help
         return sendHelp(channel);
@@ -93,7 +93,7 @@ exports.run = async (client, message, args, level) => {
 
       // add data rows
       for (const data of sortedRanks) {
-        tableBoi.addRow([client.getDiscordUsername(data.userId), data.rank]);
+        tableBoi.addRow([await client.getDiscordUsername(data.userId), data.rank]);
       }
 
       message.channel.send(`\`\`\`\n${tableBoi.getTableString()}\n\`\`\``)
@@ -104,12 +104,12 @@ exports.run = async (client, message, args, level) => {
   }
 };
 
-function reset(client, message, channel, userId) {
+async function reset(client, message, channel, userId) {
   if (client.permlevel(message) < 3) {
     return channel.send(`You must be Admin or higher to use this command`);
   }
 
-  const discordUser = client.parseDiscordUser(userId);
+  const discordUser = await client.parseDiscordUser(userId);
   if (discordUser == undefined) {
     return sendHelp(channel); // missing/wrong argument, send help
   }
