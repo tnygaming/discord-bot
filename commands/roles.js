@@ -14,20 +14,27 @@ function buildHelpEmbed() {
       .setTitle('Roles')
       .setDescription('Roles command options')
       .addFields(
-          { name: '.roles create [role] {category}', value: 'Create a new role optional category (Mod only)'},
-          { name: '.roles enroll [role] [@user...]', value: 'Enroll user(s) to a role (Mod only)'},
-          { name: '.roles join [role]', value: 'Join a role'},
-          { name: '.roles leave [role]', value: 'Leave a role'},
-          { name: '.roles list', value: 'Displays all available roles'},
-          { name: '.roles remove [role]', value: 'Remove a role (Mod only)'},
-          { name: '.roles set [role] [@user]', value: 'Sets owner of role to @user (Admin only)'},
+          { name: '.roles create [role] {category}',
+            value: 'Create a new role optional category (Mod only)'},
+          { name: '.roles enroll [role] [@user...]',
+            value: 'Enroll user(s) to a role (Mod only)'},
+          { name: '.roles join [role]',
+            value: 'Join a role'},
+          { name: '.roles leave [role]',
+            value: 'Leave a role'},
+          { name: '.roles list',
+            value: 'Displays all available roles'},
+          { name: '.roles remove [role]',
+            value: 'Remove a role (Mod only)'},
+          { name: '.roles set [role] [@user]',
+            value: 'Sets owner of role to @user (Admin only)'},
       )
       .setTimestamp()
       .setFooter("BOT Alfred");
 }
 
 function sendHelp(channel) {
-  return channel.send({embeds: [buildHelpEmbed()] });
+  return channel.send({embed: buildHelpEmbed() });
 }
 
 // This is okay for now but prob want to move this later to another
@@ -43,8 +50,7 @@ function validateRoleOwner(client, message, roleName) {
 }
 
 function getAllowedRoles(client, guildId) {
-  let roleData = client.rolesData.ensure(guildId, {});
-  return roleData;
+  return client.rolesData.ensure(guildId, {});
 }
 
 function sendInvalidRole(client, channel) {

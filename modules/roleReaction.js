@@ -4,7 +4,7 @@ module.exports = async client => {
 
     const channelId = '798083424015482880'
     const getEmoji =
-        emojiName => client.emojis.cache.find(emoji => emoji.name === emojiName)
+        emojiName => client.GuildEmojiManager.cache.find(emoji => emoji.name === emojiName)
 
     const emojis = {
         counterstrike: 'csgo',
