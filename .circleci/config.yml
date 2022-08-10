@@ -35,13 +35,13 @@ jobs:
           command: ssh-keyscan -p$jumpport $jumphost >> ~/.ssh/known_hosts
       - run:
           name: Update Bot
-          command: ssh -o StrictHostKeychecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost "cd /opt/discord-bot; git pull"
+          command: ssh -o StrictHostKeychecking=no $tnyuser@$tnyhost "cd /opt/discord-bot; git pull"
       - run:
           name: Push to Remote Host
-          command: rsync -v -a -e "ssh -A -t $jumpuser@$jumphost -p $jumpport ssh -A -t $tnyuser@$tnyhost" /root/project/node_modules :/opt/discord-bot
+          command: rsync -v -a -e "ssh -A -t $tnyuser@$tnyhost" /root/project/node_modules :/opt/discord-bot
       - run:
           name: Restart Bot
-          command: ssh -o StrictHostKeychecking=no -J $jumpuser@$jumphost:$jumpport $tnyuser@$tnyhost "npx pm2 restart alfred"
+          command: ssh -o StrictHostKeychecking=no $tnyuser@$tnyhost "npx pm2 restart alfred"
       - run:
           name: Post-Deploy Notification
           command: curl --request POST --url $discordhook --header 'Content-Type:application/json' --data '{"username":"CircleCI","content":"Alfred has been deployed."}'
