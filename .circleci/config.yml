@@ -32,7 +32,7 @@ jobs:
           command: npm run test
       - run:
           name: Add Host Key
-          command: ssh-keyscan -p$jumpport $jumphost >> ~/.ssh/known_hosts
+          command: ssh-keyscan $tnyhost >> ~/.ssh/known_hosts
       - run:
           name: Update Bot
           command: ssh -o StrictHostKeychecking=no $tnyuser@$tnyhost "cd /opt/discord-bot; git pull"
